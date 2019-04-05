@@ -24,7 +24,7 @@ class EloRatingSystem(object):
     def getTeam(self, team_abv):
         return self.teams[team_abv]
 
-    def getWinProbability(self, team1, team2):
+    def getWinProb(self, team1, team2):
         """
         Get the probability that team1 will beat team2.
         @return win probability between 0 and 1.
@@ -38,7 +38,7 @@ class EloRatingSystem(object):
         Adjust the model's understanding of two teams based on the outcome of a
         match between the two teams.
         """
-        forecast_delta = 1 - self.getWinProbability(winning_team, losing_team)
+        forecast_delta = 1 - self.getWinProb(winning_team, losing_team)
         correction = self.K * forecast_delta
         winning_team.updateRating(correction)
         losing_team.updateRating(-correction)
@@ -53,6 +53,13 @@ class EloRatingSystem(object):
                 w_team = self.getTeam(t1 if int(t1s) else t2)
                 l_team = self.getTeam(t2 if int(t1s) else t1)
                 self.adjustRating(w_team, l_team)
+
+    def predict(self, team1, team2):
+        win_prob = self.getWinProb(self.getTeam(team1), self.getTeam(team2))
+        if win_prob < 0.5:
+            team1, team2 = team2, team1
+            win_prob = 1 - win_prob
+        print("{} {}% over {}".format(team1, int(win_prob*100), team2))
 
     def plot(self):
         import matplotlib.pyplot as plt
