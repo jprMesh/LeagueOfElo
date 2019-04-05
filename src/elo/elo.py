@@ -69,7 +69,7 @@ class EloRatingSystem(object):
         for _, team in self.teams.items():
             new_start = team.rating - (team.rating - 1500)/4
             team.rating = new_start
-            team.rating_history.append([new_start])
+        self.align()
 
     def predict(self, team1, team2):
         win_prob = self.getWinProb(self.getTeam(team1), self.getTeam(team2))
@@ -90,12 +90,15 @@ class EloRatingSystem(object):
         plt.tick_params(axis='both', which='both', bottom=False, top=False,
                 labelbottom=True, left=False, right=False, labelleft=True)
         plt.grid(True, 'major', 'y', ls='--', lw=.5, c='k', alpha=.3)
+        plt.title(self.league_name + " Elo Ratings")
         for _, team in self.teams.items():
             for idx, rh_segment in enumerate(team.rating_history):
                 start_idx = self.alignment[idx]
                 if idx != 0 and rh_segment[0] == team.rating_history[idx-1][-1]:
-                    prev_end = self.alignment[idx-1]+len(team.rating_history[idx-1]) - 1
-                    plt.plot([prev_end, start_idx], [rh_segment[0], rh_segment[0]], team.color, alpha=0.2, linestyle=':')
+                    future_games = max([len(team.rating_history[x]) for x in range(idx, len(self.alignment))])
+                    if future_games > 1:
+                        prev_end = self.alignment[idx-1]+len(team.rating_history[idx-1]) - 1
+                        plt.plot([prev_end, start_idx], [rh_segment[0], rh_segment[0]], team.color, alpha=0.2)
                 x_series = list(range(start_idx, start_idx+len(rh_segment)))
                 plt.plot(x_series, rh_segment, team.color)
         plt.show()

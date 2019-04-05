@@ -14,15 +14,13 @@ def LCS():
     lcs_ratings.plot()
 
 def LEC():
-    SEASON = "LEC 2019 Spring"
+    LEAGUE = "LEC"
 
-    ratings = elo.EloRatingSystem(SEASON, "../data/{}/teams.csv".format(SEASON), K=50)
-    ratings.loadGames("../data/{}/reg_season.games".format(SEASON))
-    ratings.predict('SK', 'SPY')
-    ratings.predict('FNC', 'VIT')
-    # ratings.loadGames("../data/{}/playoffs.games".format(SEASON))
-    # ratings.predict('FNC', 'SPY')
-    # ratings.predict('OG', 'G2')
+    ratings = elo.EloRatingSystem(LEAGUE, "../data/{}/teams.csv".format(LEAGUE), K=50)
+    ratings.loadGames("../data/LEC/LEC 2018 Summer/reg_season.games")
+    ratings.loadGames("../data/LEC/LEC 2018 Summer/playoffs.games")
+    ratings.newSeasonReset()
+    ratings.loadGames("../data/LEC/LEC 2019 Spring/reg_season.games")
     print(ratings)
     ratings.plot()
 
