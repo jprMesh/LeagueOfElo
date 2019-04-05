@@ -1,7 +1,7 @@
 from elo import elo
 
 def LCS():
-    SEASON = "LCS_2019_Spring"
+    SEASON = "LCS 2019 Spring"
 
     lcs_ratings = elo.EloRatingSystem(SEASON, "../data/{}/teams.csv".format(SEASON), K=50)
     lcs_ratings.loadGames("../data/{}/reg_season.games".format(SEASON))
@@ -14,7 +14,7 @@ def LCS():
     lcs_ratings.plot()
 
 def LEC():
-    SEASON = "LEC_2019_Spring"
+    SEASON = "LEC 2019 Spring"
 
     ratings = elo.EloRatingSystem(SEASON, "../data/{}/teams.csv".format(SEASON), K=50)
     ratings.loadGames("../data/{}/reg_season.games".format(SEASON))
@@ -25,3 +25,6 @@ def LEC():
     # ratings.predict('OG', 'G2')
     print(ratings)
     ratings.plot()
+
+LCS()
+LEC()

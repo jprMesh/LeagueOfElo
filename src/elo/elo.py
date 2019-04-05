@@ -10,6 +10,7 @@ class EloRatingSystem(object):
             for team in teams:
                 team_info = list(map(str.strip, team.split(',')))
                 self.teams[team_info[0]] = Team(*team_info)
+        self.alignment = [0]
 
     def __repr__(self):
         team_table = []
@@ -49,10 +50,26 @@ class EloRatingSystem(object):
                 game = game.strip()
                 if not game:
                     continue
+                if game == "#Align#":
+                    self.align()
+                    continue
                 t1, t1s, t2s, t2 = game.split()
                 w_team = self.getTeam(t1 if int(t1s) else t2)
                 l_team = self.getTeam(t2 if int(t1s) else t1)
                 self.adjustRating(w_team, l_team)
+
+    def align(self):
+        max_games = 0
+        for _, team in self.teams.items():
+            max_games = max(max_games, len(team.rating_history[-1]))
+            team.rating_history.append([team.rating])
+        self.alignment.append(max_games + self.alignment[-1] - 1)
+
+    def newSeasonReset(self):
+        for _, team in self.teams.items():
+            new_start = team.rating - (team.rating - 1500)/4
+            team.rating = new_start
+            team.rating_history.append([new_start])
 
     def predict(self, team1, team2):
         win_prob = self.getWinProb(self.getTeam(team1), self.getTeam(team2))
@@ -74,6 +91,12 @@ class EloRatingSystem(object):
                 labelbottom=True, left=False, right=False, labelleft=True)
         plt.grid(True, 'major', 'y', ls='--', lw=.5, c='k', alpha=.3)
         for _, team in self.teams.items():
-            plt.plot(team.rating_history, team.color)
+            for idx, rh_segment in enumerate(team.rating_history):
+                start_idx = self.alignment[idx]
+                if idx != 0 and rh_segment[0] == team.rating_history[idx-1][-1]:
+                    prev_end = self.alignment[idx-1]+len(team.rating_history[idx-1]) - 1
+                    plt.plot([prev_end, start_idx], [rh_segment[0], rh_segment[0]], team.color, alpha=0.2, linestyle=':')
+                x_series = list(range(start_idx, start_idx+len(rh_segment)))
+                plt.plot(x_series, rh_segment, team.color)
         plt.show()
 
