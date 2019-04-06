@@ -1,28 +1,32 @@
 from elo import elo
 
 def LCS():
-    SEASON = "LCS 2019 Spring"
+    LEAGUE = "LCS"
 
-    lcs_ratings = elo.EloRatingSystem(SEASON, "../data/{}/teams.csv".format(SEASON), K=50)
-    lcs_ratings.loadGames("../data/{}/reg_season.games".format(SEASON))
-    lcs_ratings.predict('FLY', 'GGS')
-    lcs_ratings.predict('TSM', 'FOX')
-    lcs_ratings.loadGames("../data/{}/playoffs.games".format(SEASON))
-    lcs_ratings.predict('C9', 'TSM')
-    lcs_ratings.predict('TL', 'FLY')
-    print(lcs_ratings)
-    lcs_ratings.plot()
+    lcs = elo.EloRatingSystem(LEAGUE, "../data/{}/teams.csv".format(LEAGUE), K=50)
+    lcs.loadGames("../data/LCS/LCS 2018 Spring/reg_season.games")
+    lcs.loadGames("../data/LCS/LCS 2018 Spring/playoffs.games")
+    lcs.newSeasonReset()
+    lcs.loadGames("../data/LCS/LCS 2018 Summer/reg_season.games")
+    lcs.loadGames("../data/LCS/LCS 2018 Summer/playoffs.games")
+    lcs.newSeasonReset()
+    lcs.loadGames("../data/LCS/LCS 2019 Spring/reg_season.games")
+    lcs.loadGames("../data/LCS/LCS 2019 Spring/playoffs.games")
+    lcs.predict('C9', 'TSM')
+    lcs.predict('TL', 'FLY')
+    print(lcs)
+    lcs.plot()
 
 def LEC():
     LEAGUE = "LEC"
 
-    ratings = elo.EloRatingSystem(LEAGUE, "../data/{}/teams.csv".format(LEAGUE), K=50)
-    ratings.loadGames("../data/LEC/LEC 2018 Summer/reg_season.games")
-    ratings.loadGames("../data/LEC/LEC 2018 Summer/playoffs.games")
-    ratings.newSeasonReset()
-    ratings.loadGames("../data/LEC/LEC 2019 Spring/reg_season.games")
-    print(ratings)
-    ratings.plot()
+    lec = elo.EloRatingSystem(LEAGUE, "../data/{}/teams.csv".format(LEAGUE), K=50)
+    lec.loadGames("../data/LEC/LEC 2018 Summer/reg_season.games")
+    lec.loadGames("../data/LEC/LEC 2018 Summer/playoffs.games")
+    lec.newSeasonReset()
+    lec.loadGames("../data/LEC/LEC 2019 Spring/reg_season.games")
+    print(lec)
+    lec.plot()
 
 LCS()
-LEC()
+#LEC()

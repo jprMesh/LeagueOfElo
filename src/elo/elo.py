@@ -11,6 +11,8 @@ class EloRatingSystem(object):
                 team_info = list(map(str.strip, team.split(',')))
                 self.teams[team_info[0]] = Team(*team_info)
         self.alignment = [0]
+        self.season_boundary = []
+        self.brier_scores = []
 
     def __repr__(self):
         team_table = []
@@ -63,13 +65,16 @@ class EloRatingSystem(object):
         for _, team in self.teams.items():
             max_games = max(max_games, len(team.rating_history[-1]))
             team.rating_history.append([team.rating])
-        self.alignment.append(max_games + self.alignment[-1] - 1)
+        alignment = max_games + self.alignment[-1] - 1
+        self.alignment.append(alignment)
+        return alignment
 
     def newSeasonReset(self):
         for _, team in self.teams.items():
             new_start = team.rating - (team.rating - 1500)/4
             team.rating = new_start
-        self.align()
+        season_bound = self.align()
+        self.season_boundary.append(season_bound)
 
     def predict(self, team1, team2):
         win_prob = self.getWinProb(self.getTeam(team1), self.getTeam(team2))
@@ -81,12 +86,12 @@ class EloRatingSystem(object):
     def plot(self):
         import matplotlib.pyplot as plt
         import matplotlib.ticker as ticker
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(15, 5))
         ax.spines['top'].set_visible(False)
         ax.spines['bottom'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.spines['left'].set_visible(False)
-        ax.xaxis.set_major_locator(ticker.MultipleLocator(3))
+        ax.xaxis.set_major_locator(ticker.MultipleLocator(10))
         plt.tick_params(axis='both', which='both', bottom=False, top=False,
                 labelbottom=True, left=False, right=False, labelleft=True)
         plt.grid(True, 'major', 'y', ls='--', lw=.5, c='k', alpha=.3)
@@ -94,12 +99,14 @@ class EloRatingSystem(object):
         for _, team in self.teams.items():
             for idx, rh_segment in enumerate(team.rating_history):
                 start_idx = self.alignment[idx]
-                if idx != 0 and rh_segment[0] == team.rating_history[idx-1][-1]:
-                    future_games = max([len(team.rating_history[x]) for x in range(idx, len(self.alignment))])
-                    if future_games > 1:
-                        prev_end = self.alignment[idx-1]+len(team.rating_history[idx-1]) - 1
-                        plt.plot([prev_end, start_idx], [rh_segment[0], rh_segment[0]], team.color, alpha=0.2)
+                future_games = max([len(team.rating_history[x]) for x in range(idx, len(self.alignment))])
+                if idx != 0 and future_games > 1:
+                    prev_end = self.alignment[idx-1]+len(team.rating_history[idx-1]) - 1
+                    prev_rating = team.rating_history[idx-1][-1]
+                    plt.plot([prev_end, start_idx], [prev_rating, prev_rating], team.color, alpha=0.2)
                 x_series = list(range(start_idx, start_idx+len(rh_segment)))
                 plt.plot(x_series, rh_segment, team.color)
+        for bound in self.season_boundary:
+            plt.axvline(x=bound, color='k', linewidth=1)
         plt.show()
 
