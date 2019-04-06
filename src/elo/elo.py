@@ -45,6 +45,8 @@ class EloRatingSystem(object):
         correction = self.K * forecast_delta
         winning_team.updateRating(correction)
         losing_team.updateRating(-correction)
+        brier = forecast_delta**2
+        self.brier_scores.append(brier)
 
     def loadGames(self, gamefile):
         with open(gamefile, 'r') as games:
@@ -82,6 +84,9 @@ class EloRatingSystem(object):
             team1, team2 = team2, team1
             win_prob = 1 - win_prob
         print("{} {}% over {}".format(team1, int(win_prob*100), team2))
+
+    def printBrier(self):
+        print(sum(self.brier_scores)/len(self.brier_scores))
 
     def plot(self):
         import matplotlib.pyplot as plt
