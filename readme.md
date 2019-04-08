@@ -20,6 +20,7 @@ The model currently has data going back to the beginning of franchising for the 
 
 ![LCS Rating History](data/LCS/rating_history_2019_spring.png)
 
+```
 LCS Elo Ratings
      TL  1674
     TSM  1651
@@ -31,6 +32,7 @@ LCS Elo Ratings
     CLG  1431
     100  1389
      CG  1385
+```
 
 ### Predictions
 
