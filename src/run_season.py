@@ -12,11 +12,8 @@ def LCS():
     lcs.newSeasonReset()
     lcs.loadGames("../data/LCS/LCS 2019 Spring/reg_season.games")
     lcs.loadGames("../data/LCS/LCS 2019 Spring/playoffs.games")
-    lcs.predict('C9', 'TSM')
-    lcs.predict('TL', 'FLY')
-    print(lcs)
-    lcs.printBrier()
-    lcs.plot()
+    lcs.predict('TL', 'TSM')
+    lcs.stats()
 
 def LEC():
     LEAGUE = "LEC"
@@ -26,8 +23,7 @@ def LEC():
     lec.loadGames("../data/LEC/LEC 2018 Summer/playoffs.games")
     lec.newSeasonReset()
     lec.loadGames("../data/LEC/LEC 2019 Spring/reg_season.games")
-    print(lec)
-    lec.plot()
+    lec.stats()
 
 LCS()
 #LEC()

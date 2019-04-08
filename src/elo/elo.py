@@ -86,7 +86,7 @@ class EloRatingSystem(object):
         print("{} {}% over {}".format(team1, int(win_prob*100), team2))
 
     def printBrier(self):
-        print(sum(self.brier_scores)/len(self.brier_scores))
+        print("Brier Score: {:.4f}".format(sum(self.brier_scores)/len(self.brier_scores)))
 
     def plot(self):
         import matplotlib.pyplot as plt
@@ -115,3 +115,7 @@ class EloRatingSystem(object):
             plt.axvline(x=bound, color='k', linewidth=1)
         plt.show()
 
+    def stats(self):
+        self.printBrier()
+        print(self)
+        self.plot()
