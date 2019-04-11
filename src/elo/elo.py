@@ -92,6 +92,7 @@ class EloRatingSystem(object):
         import matplotlib.pyplot as plt
         import matplotlib.ticker as ticker
         fig, ax = plt.subplots(figsize=(15, 5))
+        plt.subplots_adjust(left=0.05, right=0.95)
         ax.spines['top'].set_visible(False)
         ax.spines['bottom'].set_visible(False)
         ax.spines['right'].set_visible(False)
@@ -102,6 +103,7 @@ class EloRatingSystem(object):
         plt.grid(True, 'major', 'y', ls='--', lw=.5, c='k', alpha=.3)
         plt.title(self.league_name + " Elo Ratings")
         for _, team in self.teams.items():
+            line_label = None
             for idx, rh_segment in enumerate(team.rating_history):
                 start_idx = self.alignment[idx]
                 future_games = max([len(team.rating_history[x]) for x in range(idx, len(self.alignment))])
@@ -110,9 +112,12 @@ class EloRatingSystem(object):
                     prev_rating = team.rating_history[idx-1][-1]
                     plt.plot([prev_end, start_idx], [prev_rating, prev_rating], team.color, alpha=0.2)
                 x_series = list(range(start_idx, start_idx+len(rh_segment)))
-                plt.plot(x_series, rh_segment, team.color)
+                line_label, = plt.plot(x_series, rh_segment, team.color)
+            if not team.color == '#000000':
+                line_label.set_label(team.abbrev)
         for bound in self.season_boundary:
             plt.axvline(x=bound, color='k', linewidth=1)
+        plt.legend(loc='upper left')
         plt.show()
 
     def stats(self):

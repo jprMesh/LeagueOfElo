@@ -19,11 +19,16 @@ def LEC():
     LEAGUE = "LEC"
 
     lec = elo.EloRatingSystem(LEAGUE, "../data/{}/teams.csv".format(LEAGUE), K=30)
+    lec.loadGames("../data/LEC/LEC 2018 Spring/reg_season.games")
+    lec.loadGames("../data/LEC/LEC 2018 Spring/playoffs.games")
+    lec.newSeasonReset()
     lec.loadGames("../data/LEC/LEC 2018 Summer/reg_season.games")
     lec.loadGames("../data/LEC/LEC 2018 Summer/playoffs.games")
     lec.newSeasonReset()
     lec.loadGames("../data/LEC/LEC 2019 Spring/reg_season.games")
+    lec.loadGames("../data/LEC/LEC 2019 Spring/playoffs.games")
+    lec.predict('G2', 'OG')
     lec.stats()
 
-LCS()
-#LEC()
+#LCS()
+LEC()
