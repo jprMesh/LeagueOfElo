@@ -9,7 +9,7 @@ class EloRatingSystem(object):
         with open(teamfile, 'r') as teams:
             for team in teams:
                 team_info = list(map(str.strip, team.split(',')))
-                self.teams[team_info[0]] = Team(*team_info)
+                self.teams[team_info[1]] = Team(*team_info)
         self.alignment = [0]
         self.season_boundary = []
         self.brier_scores = []
@@ -24,8 +24,8 @@ class EloRatingSystem(object):
             table_str += row[1]
         return table_str
 
-    def getTeam(self, team_abv):
-        return self.teams[team_abv]
+    def getTeam(self, team_name):
+        return self.teams[team_name]
 
     def getWinProb(self, team1, team2):
         """
@@ -48,7 +48,17 @@ class EloRatingSystem(object):
         brier = forecast_delta**2
         self.brier_scores.append(brier)
 
-    def loadGames(self, gamefile):
+    def loadGames(self, results, elims=False):
+        for result in results:
+            t1, t2, t1s, t2s = result
+            if not t1s:
+                continue
+            w_team, l_team = (t1, t2) if int(t1s) > int(t2s) else (t2, t1)
+            self.adjustRating(self.getTeam(w_team), self.getTeam(l_team))
+            if elims:
+                self.align()
+
+    def loadGamesFile(self, gamefile):
         with open(gamefile, 'r') as games:
             for game in games:
                 game = game.strip()

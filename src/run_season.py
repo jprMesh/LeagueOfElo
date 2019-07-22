@@ -1,34 +1,34 @@
 from elo import elo
+from get_league_data import Leaguepedia_DB
 
 def LCS():
-    LEAGUE = "LCS"
+    lpdb = Leaguepedia_DB()
+    SEASON_RESET = None
 
-    lcs = elo.EloRatingSystem(LEAGUE, "../data/{}/teams.csv".format(LEAGUE), K=30)
-    lcs.loadGames("../data/LCS/LCS 2018 Spring/reg_season.games")
-    lcs.loadGames("../data/LCS/LCS 2018 Spring/playoffs.games")
-    lcs.newSeasonReset()
-    lcs.loadGames("../data/LCS/LCS 2018 Summer/reg_season.games")
-    lcs.loadGames("../data/LCS/LCS 2018 Summer/playoffs.games")
-    lcs.newSeasonReset()
-    lcs.loadGames("../data/LCS/LCS 2019 Spring/reg_season.games")
-    lcs.loadGames("../data/LCS/LCS 2019 Spring/playoffs.games")
-    lcs.predict('TL', 'TSM')
+    lcs_seasons = [
+        "LCS 2018 Spring",
+        "LCS 2018 Spring Playoffs",
+        SEASON_RESET,
+        "LCS 2018 Summer",
+        "LCS 2018 Summer Playoffs",
+        SEASON_RESET,
+        "LCS 2019 Spring",
+        "LCS 2019 Spring Playoffs",
+        SEASON_RESET,
+        "LCS 2019 Summer",
+        "LCS 2019 Summer Playoffs",
+        ]
+
+    lcs = elo.EloRatingSystem("LCS", "../data/LCS/teams.csv", K=30)
+    for season in lcs_seasons:
+        if season:
+            results = lpdb.get_season_results(season)
+            lcs.loadGames(results)
+        else:
+            lcs.newSeasonReset()
+
+    lcs.predict('Team Liquid', 'Cloud9')
     lcs.stats()
 
-def LEC():
-    LEAGUE = "LEC"
-
-    lec = elo.EloRatingSystem(LEAGUE, "../data/{}/teams.csv".format(LEAGUE), K=30)
-    lec.loadGames("../data/LEC/LEC 2018 Spring/reg_season.games")
-    lec.loadGames("../data/LEC/LEC 2018 Spring/playoffs.games")
-    lec.newSeasonReset()
-    lec.loadGames("../data/LEC/LEC 2018 Summer/reg_season.games")
-    lec.loadGames("../data/LEC/LEC 2018 Summer/playoffs.games")
-    lec.newSeasonReset()
-    lec.loadGames("../data/LEC/LEC 2019 Spring/reg_season.games")
-    lec.loadGames("../data/LEC/LEC 2019 Spring/playoffs.games")
-    lec.predict('G2', 'OG')
-    lec.stats()
-
-#LCS()
-LEC()
+LCS()
+#LEC()
