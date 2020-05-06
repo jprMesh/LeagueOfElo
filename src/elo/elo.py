@@ -44,7 +44,7 @@ class EloRatingSystem(object):
                     team = t
                     break
         if not team:
-            raise ValueError("Team does not exist")
+            raise ValueError(f"Team does not exist: {team_name}")
         return team
 
 
@@ -127,7 +127,6 @@ class EloPlotter(object):
         import matplotlib.pyplot as plt
         import matplotlib.ticker as ticker
         import matplotlib.patheffects as path_effects
-        from statistics import median
 
         fig, ax = plt.subplots(figsize=(15, 5))
         plt.subplots_adjust(left=0.05, right=0.95)
@@ -157,6 +156,7 @@ class EloPlotter(object):
                 label_positions.append((team_data[-1][-1], team))
 
         def distribute_labels(label_positions):
+            from statistics import median
             median = median([val[0] for val in label_positions])
             label_positions.sort(key=lambda tup: abs(median-tup[0]))
             used_min = 9999
@@ -176,7 +176,7 @@ class EloPlotter(object):
                         adjusted_positions.append((used_min-1, item[1]))
                         used_min -= 16
             return adjusted_positions
-        
+
         adjusted_positions = distribute_labels(label_positions)
         for team in adjusted_positions:
             text = plt.text(end_idx+1, team[0], team[1], color=colors[team[1]], weight='bold')
