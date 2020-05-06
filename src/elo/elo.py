@@ -17,7 +17,7 @@ class EloRatingSystem(object):
     def __repr__(self):
         team_table = []
         for _, team in self.teams.items():
-            team_table.append((team.rating, "    {:>3}  {}\n".format(team.abbrev, int(team.rating))))
+            team_table.append((team.rating, f"  {team.abbrev:>3}  {int(team.rating)}\n"))
         team_table.sort(key=lambda tup: tup[0], reverse=True)
         table_str = "{} Elo Ratings\n".format(self.league_name)
         for row in team_table:
@@ -25,7 +25,16 @@ class EloRatingSystem(object):
         return table_str
 
     def getTeam(self, team_name):
-        return self.teams[team_name]
+        team = self.teams.get(team_name)
+        if not team:
+            for _, t in self.teams.items():
+                if team_name == t.abbrev:
+                    team = t
+                    break
+        if not team:
+            raise ValueError("Team does not exist")
+        return team
+
 
     def getWinProb(self, team1, team2):
         """
@@ -42,9 +51,8 @@ class EloRatingSystem(object):
         match between the two teams.
         """
         forecast_delta = 1 - self.getWinProb(winning_team, losing_team)
-        correction = self.K * forecast_delta
-        winning_team.updateRating(correction)
-        losing_team.updateRating(-correction)
+        winning_team.updateRating(winning_team.K * forecast_delta)
+        losing_team.updateRating(losing_team.K * -forecast_delta)
         brier = forecast_delta**2
         self.brier_scores.append(brier)
 
@@ -57,20 +65,6 @@ class EloRatingSystem(object):
             self.adjustRating(self.getTeam(w_team), self.getTeam(l_team))
             if elims:
                 self.align()
-
-    def loadGamesFile(self, gamefile):
-        with open(gamefile, 'r') as games:
-            for game in games:
-                game = game.strip()
-                if not game:
-                    continue
-                if game == "#Align#":
-                    self.align()
-                    continue
-                t1, t1s, t2s, t2 = game.split()
-                w_team = self.getTeam(t1 if int(t1s) else t2)
-                l_team = self.getTeam(t2 if int(t1s) else t1)
-                self.adjustRating(w_team, l_team)
 
     def align(self):
         max_games = 0
@@ -93,7 +87,7 @@ class EloRatingSystem(object):
         if win_prob < 0.5:
             team1, team2 = team2, team1
             win_prob = 1 - win_prob
-        print("{} {}% over {}".format(team1, int(win_prob*100), team2))
+        print(f"{team1} {int(win_prob*100)}% over {team2}")
 
     def printBrier(self):
         print("Brier Score: {:.4f}".format(sum(self.brier_scores)/len(self.brier_scores)))
@@ -113,6 +107,7 @@ class EloRatingSystem(object):
         plt.grid(True, 'major', 'y', ls='--', lw=.5, c='k', alpha=.3)
         plt.title(self.league_name + " Elo Ratings")
         for _, team in self.teams.items():
+            #print(team.rating_history)
             line_label = None
             for idx, rh_segment in enumerate(team.rating_history):
                 start_idx = self.alignment[idx]

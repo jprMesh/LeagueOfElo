@@ -14,8 +14,12 @@ class Leaguepedia_DB(object):
                 where= 'MS.ShownName="{}"'.format(season),
                 order_by = "MS.DateTime_UTC ASC")
 
-        x = [(y['title']['Team1'], y['title']['Team2'], y['title']['Team1Score'], y['title']['Team2Score']) for y in r['cargoquery']]
-        return x
+        matches = [(m['title']['Team1'],
+                    m['title']['Team2'],
+                    m['title']['Team1Score'],
+                    m['title']['Team2Score'])
+                   for m in r['cargoquery']]
+        return matches
 
 if __name__ == '__main__':
     from pprint import pprint

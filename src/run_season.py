@@ -6,28 +6,30 @@ def LCS():
     SEASON_RESET = None
 
     lcs_seasons = [
-        "LCS 2018 Spring",
-        "LCS 2018 Spring Playoffs",
+        "NA LCS 2018 Spring",
+        "NA LCS 2018 Spring Playoffs",
         SEASON_RESET,
-        "LCS 2018 Summer",
-        "LCS 2018 Summer Playoffs",
+        "NA LCS 2018 Summer",
+        "NA LCS 2018 Summer Playoffs",
         SEASON_RESET,
         "LCS 2019 Spring",
         "LCS 2019 Spring Playoffs",
         SEASON_RESET,
         "LCS 2019 Summer",
         "LCS 2019 Summer Playoffs",
+        SEASON_RESET,
+        "LCS 2020 Spring",
+        "LCS 2020 Spring Playoffs",
         ]
 
-    lcs = elo.EloRatingSystem("LCS", "../data/LCS/teams.csv", K=30)
+    lcs = elo.EloRatingSystem("LCS", "../cfg/LCS_teams.csv", K=30)
     for season in lcs_seasons:
         if season:
             results = lpdb.get_season_results(season)
-            lcs.loadGames(results)
+            lcs.loadGames(results, "Playoffs" in season)
         else:
             lcs.newSeasonReset()
 
-    lcs.predict('Team Liquid', 'Cloud9')
     lcs.stats()
 
 LCS()
