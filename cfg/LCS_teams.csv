@@ -1,13 +1,13 @@
-100,    100 Thieves,            #F82225
-C9,     Cloud9,                 #2497D3
-CG,     Clutch Gaming,          #CC0133
-CLG,    Counter Logic Gaming,   #00B4E5
-DIG,    Dignitas,               #FCDE4B
-EG,     Evil Geniuses.NA,       #0C121F
-FOX,    Echo Fox,               #E07026
-FLY,    FlyQuest,               #13552B
-GGS,    Golden Guardians,       #F8CF30
-IMT,    Immortals,              #4DB0AA
-OPT,    OpTic Gaming,           #9CC538
-TL,     Team Liquid,            #0C223F
-TSM,    Team SoloMid,           #252527
+000,  100,    100 Thieves,            #F82225
+001,  C9,     Cloud9,                 #2497D3
+002,  DIG,    Dignitas,               #FCDE4B
+002,  CG,     Clutch Gaming,          #CC0133
+003,  CLG,    Counter Logic Gaming,   #00B4E5
+004,  EG,     Evil Geniuses.NA,       #0C121F
+005,  FOX,    Echo Fox,               #E07026
+006,  FLY,    FlyQuest,               #13552B
+007,  GGS,    Golden Guardians,       #F8CF30
+008,  IMT,    Immortals,              #4DB0AA
+009,  OPT,    OpTic Gaming,           #9CC538
+010,  TL,     Team Liquid,            #0C223F
+011,  TSM,    Team SoloMid,           #252527

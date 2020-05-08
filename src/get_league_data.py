@@ -24,4 +24,4 @@ class Leaguepedia_DB(object):
 if __name__ == '__main__':
     from pprint import pprint
     lpdb = Leaguepedia_DB()
-    pprint(lpdb.get_season_results('LCS 2019 Spring Playoffs'))
+    pprint(lpdb.get_season_results('LCK 2019 Spring'))

@@ -8,8 +8,7 @@ class EloRatingSystem(object):
         self.teams = {}
         with open(teamfile, 'r') as teams:
             for team in teams:
-                team_info = list(map(str.strip, team.split(',')))
-                self.teams[team_info[1]] = Team(*team_info)
+                self._addTeam(team)
         self.alignment = [0]
         self.season_boundary = []
         self.brier_scores = []
@@ -24,7 +23,8 @@ class EloRatingSystem(object):
             table_str += row[1]
         return table_str
 
-    def get_active_teams_ratings(self):
+## Public
+    def getActiveTeamsRatings(self):
         team_table = []
         for _, team in self.teams.items():
             if team.inactive:
@@ -36,19 +36,60 @@ class EloRatingSystem(object):
             table_str += row[1]
         return table_str
 
-    def getTeam(self, team_name):
+    def loadGames(self, results, align=False):
+        for result in results:
+            t1, t2, t1s, t2s = result
+            if not t1s:
+                continue
+            winloss_args = ((t1, t2, int(t1s), int(t2s)) if
+                            int(t1s) > int(t2s) else
+                            (t2, t1, int(t2s), int(t1s)))
+            self._adjustRating(*winloss_args)
+            if align:
+                self._align()
+
+    def newSeasonReset(self):
+        self._align()
+        for _, team in self.teams.items():
+            if not team.inactive:
+                team.rating = team.rating*0.75 + 1500*0.25
+            team.rating_history.append([team.rating])
+
+    def predict(self, team1, team2):
+        win_prob = self._getWinProb(self._getTeam(team1), self._getTeam(team2))
+        if win_prob < 0.5:
+            team1, team2 = team2, team1
+            win_prob = 1 - win_prob
+        print(f"{team1} {int(win_prob*100)}% over {team2}")
+
+    def printStats(self):
+        print(self._getBrier())
+        print(self.getActiveTeamsRatings())
+        data, colors = self._exportData()
+        EloPlotter.matplotlib_plot(self.league_name, data, colors)
+
+## Private
+    def _addTeam(self, team):
+        team_info = list(map(str.strip, team.split(',')))
+        try:
+            existing_team = self._getTeam(team_id=team_info[0])
+        except ValueError:
+            self.teams[team_info[2]] = Team(*team_info)
+        else:
+            existing_team.names.extend([team_info[2], team_info[1]])
+
+    def _getTeam(self, team_name=None, team_id=None):
         team = self.teams.get(team_name)
         if not team:
             for _, t in self.teams.items():
-                if team_name == t.abbrev:
+                if team_name in t.names or team_id == t.team_id:
                     team = t
                     break
         if not team:
             raise ValueError(f"Team does not exist: {team_name}")
         return team
 
-
-    def getWinProb(self, team1, team2):
+    def _getWinProb(self, team1, team2):
         """
         Get the probability that team1 will beat team2.
         @return win probability between 0 and 1.
@@ -57,27 +98,27 @@ class EloRatingSystem(object):
         win_prob = 1 / (10**(-rating_diff/400) + 1)
         return win_prob
 
-    def adjustRating(self, winning_team, losing_team):
+    def _getMatchScoreMultiplier(self, winner_score, loser_score):
+        """
+        Get a modifier value to scale rating adjustments with respect to match score.
+        """
+        w, l = winner_score, loser_score
+        multiplier = ((w-l)*w/(w+l))**0.7
+        return multiplier
+
+    def _adjustRating(self, winner, loser, winner_score, loser_score):
         """
         Adjust the model's understanding of two teams based on the outcome of a
         match between the two teams.
         """
-        forecast_delta = 1 - self.getWinProb(winning_team, losing_team)
-        winning_team.updateRating(self.K * forecast_delta)
-        losing_team.updateRating(self.K * -forecast_delta)
+        winning_team, losing_team = self._getTeam(winner), self._getTeam(loser)
+        forecast_delta = 1 - self._getWinProb(winning_team, losing_team)
+        match_score_mult = self._getMatchScoreMultiplier(winner_score, loser_score)
+        winning_team.updateRating(self.K * forecast_delta * match_score_mult)
+        losing_team.updateRating(self.K * -forecast_delta * match_score_mult)
         self.brier_scores.append(forecast_delta**2)
 
-    def loadGames(self, results, align=False):
-        for result in results:
-            t1, t2, t1s, t2s = result
-            if not t1s:
-                continue
-            w_team, l_team = (t1, t2) if int(t1s) > int(t2s) else (t2, t1)
-            self.adjustRating(self.getTeam(w_team), self.getTeam(l_team))
-            if align:
-                self.align()
-
-    def align(self):
+    def _align(self):
         max_games = max([len(self.teams[team].rating_history[-1]) for team in self.teams])
         for _, team in self.teams.items():
             if len(set(team.rating_history[-1])) == 1:
@@ -87,31 +128,11 @@ class EloRatingSystem(object):
             game_diff = max_games - len(team.rating_history[-1])
             team.rating_history[-1].extend([team.rating] * game_diff)
 
-    def newSeasonReset(self):
-        self.align()
-        for _, team in self.teams.items():
-            if not team.inactive:
-                team.rating = team.rating*0.75 + 1500*0.25
-            team.rating_history.append([team.rating])
-
-    def predict(self, team1, team2):
-        win_prob = self.getWinProb(self.getTeam(team1), self.getTeam(team2))
-        if win_prob < 0.5:
-            team1, team2 = team2, team1
-            win_prob = 1 - win_prob
-        print(f"{team1} {int(win_prob*100)}% over {team2}")
-
-    def printBrier(self):
+    def _getBrier(self):
         brier = sum(self.brier_scores)/len(self.brier_scores)
-        print(f"Brier Score: {brier:.4f}")
+        return f"Brier Score: {brier:.4f}"
 
-    def stats(self):
-        self.printBrier()
-        print(self.get_active_teams_ratings())
-        data, colors = self.export_data()
-        EloPlotter.matplotlib_plot(self.league_name, data, colors)
-
-    def export_data(self):
+    def _exportData(self):
         data = {}
         colors = {}
         for team in self.teams:
@@ -119,6 +140,7 @@ class EloRatingSystem(object):
             colors[abbrev] = self.teams[team].color
             data[abbrev] = self.teams[team].rating_history
         return data, colors
+
 
 class EloPlotter(object):
     """Plots elo over time"""

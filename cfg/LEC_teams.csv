@@ -1,15 +1,15 @@
-XL,     Excel Esports,          #DF4400
-S04,    FC Schalke 04 Esports,  #004B9C
-FNC,    Fnatic,                 #F19D33
-G2,     G2 Esports,             #2E2E2E
-MAD,    MAD Lions,              #DFB566
-MSF,    Misfits Gaming,         #A60E29
-OG,     Origen,                 #141F72
-RGE,    Rogue (European Team),  #2D97D3
-SK,     SK Gaming,              #101B48
-SPY,    Splyce,                 #EEBB09
-VIT,    Team Vitality,          #FdC04B
-H2k,    H2k-Gaming
-ROC,    Team ROCCAT
-GIA,    Giants Gaming
-UOL,    Unicorns Of Love
+100,    XL,     Excel Esports,          #DF4400
+101,    S04,    FC Schalke 04 Esports,  #004B9C
+102,    FNC,    Fnatic,                 #F19D33
+103,    G2,     G2 Esports,             #2E2E2E
+104,    MSF,    Misfits Gaming,         #A60E29
+105,    OG,     Origen,                 #141F72
+106,    RGE,    Rogue (European Team),  #2D97D3
+107,    SK,     SK Gaming,              #101B48
+108,    MAD,    MAD Lions,              #DFB566
+108,    SPY,    Splyce,                 #EEBB09
+109,    VIT,    Team Vitality,          #FdC04B
+110,    UOL,    Unicorns Of Love
+111,    H2k,    H2k-Gaming
+112,    ROC,    Team ROCCAT
+113,    GIA,    Giants Gaming

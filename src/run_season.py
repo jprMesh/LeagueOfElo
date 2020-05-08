@@ -22,7 +22,7 @@ def run_league(region):
             "LCS 2020 Spring",
             "LCS 2020 Spring Playoffs",
             ]
-        league = elo.EloRatingSystem("LCS", "../cfg/LCS_teams.csv", K=30)
+        league = elo.EloRatingSystem(region, "../cfg/LCS_teams.csv", K=30)
     elif region == "LEC":
         seasons = [
             "EU LCS 2018 Spring",
@@ -40,7 +40,19 @@ def run_league(region):
             "LEC 2020 Spring",
             "LEC 2020 Spring Playoffs",
             ]
-        league = elo.EloRatingSystem("LEC", "../cfg/LEC_teams.csv", K=30)
+        league = elo.EloRatingSystem(region, "../cfg/LEC_teams.csv", K=30)
+    elif region == "LCK":
+        seasons = [
+            "LCK 2019 Spring",
+            "LCK 2019 Spring Playoffs",
+            SEASON_RESET,
+            "LCK 2019 Summer",
+            "LCK 2019 Summer Playoffs",
+            SEASON_RESET,
+            "LCK 2020 Spring",
+            "LCK 2020 Spring Playoffs",
+            ]
+        league = elo.EloRatingSystem(region, "../cfg/LCK_teams.csv", K=30)
     else:
         exit()
 
@@ -50,7 +62,6 @@ def run_league(region):
             league.loadGames(results, "Playoffs" in season)
         else:
             league.newSeasonReset()
-    league.stats()
+    league.printStats()
 
-run_league("LCS")
-#run_league("LEC")
+run_league("LEC")
