@@ -1,4 +1,4 @@
-from .team import Team
+from .team import *
 
 class EloRatingSystem(object):
     """Elo Rating System for a single league"""
@@ -16,7 +16,7 @@ class EloRatingSystem(object):
     def __repr__(self):
         team_table = []
         for _, team in self.teams.items():
-            team_table.append((team.rating, f"  {team.abbrev:>3}  {int(team.rating)}\n"))
+            team_table.append((team.getRating(), f"  {team.abbrev:>3}  {int(team.getRating())}\n"))
         team_table.sort(key=lambda tup: tup[0], reverse=True)
         table_str = "{} Elo Ratings\n".format(self.league_name)
         for row in team_table:
@@ -29,7 +29,7 @@ class EloRatingSystem(object):
         for _, team in self.teams.items():
             if team.inactive:
                 continue
-            team_table.append((team.rating, f"  {team.abbrev:>3}  {int(team.rating)}\n"))
+            team_table.append((team.getRating(), f"  {team.abbrev:>3}  {int(team.getRating())}\n"))
         team_table.sort(key=lambda tup: tup[0], reverse=True)
         table_str = "{} Elo Ratings\n".format(self.league_name)
         for row in team_table:
@@ -52,8 +52,8 @@ class EloRatingSystem(object):
         self._align()
         for _, team in self.teams.items():
             if not team.inactive:
-                team.rating = team.rating*0.75 + 1500*0.25
-            team.rating_history.append([team.rating])
+                team.team_rating = team.getRating()*0.75 + 1500*0.25
+            team.rating_history.append([team.getRating()])
 
     def predict(self, team1, team2):
         win_prob = self._getWinProb(self._getTeam(team1), self._getTeam(team2))
@@ -94,7 +94,7 @@ class EloRatingSystem(object):
         Get the probability that team1 will beat team2.
         @return win probability between 0 and 1.
         """
-        rating_diff = team1.rating - team2.rating
+        rating_diff = team1.getRating() - team2.getRating()
         win_prob = 1 / (10**(-rating_diff/400) + 1)
         return win_prob
 
@@ -126,7 +126,7 @@ class EloRatingSystem(object):
             else:
                 team.inactive = False
             game_diff = max_games - len(team.rating_history[-1])
-            team.rating_history[-1].extend([team.rating] * game_diff)
+            team.rating_history[-1].extend([team.getRating()] * game_diff)
 
     def _getBrier(self):
         brier = sum(self.brier_scores)/len(self.brier_scores)
@@ -140,6 +140,49 @@ class EloRatingSystem(object):
             colors[abbrev] = self.teams[team].color
             data[abbrev] = self.teams[team].rating_history
         return data, colors
+
+
+class PlayerEloRatingSystem(EloRatingSystem):
+    """docstring for PlayerEloRatingSystem"""
+    def __init__(self, league, teamfile, K=20):
+        super(PlayerEloRatingSystem, self).__init__(league, teamfile, K)
+        self.all_players = {}
+
+## Public
+    def loadRosters(self, rosters):
+        for team_roster in rosters:
+            team = self._getTeam(team_roster[0])
+            team.clearRoster()
+            for player in team_roster[1]:
+                role, player_name = player
+                player_obj = self.all_players.get(player_name)
+                if not player_obj:
+                    player_obj = Player(player_name)
+                self.all_players[player_name] = player_obj
+                team.addPlayer(role, player_obj)
+
+    def getPlayerRatings(self):
+        player_table = []
+        for _, player in self.all_players.items():
+            player_table.append((player.getRating(), f"  {player.name:>3}  {int(player.getRating())}\n"))
+        player_table.sort(key=lambda tup: tup[0], reverse=True)
+        table_str = "{} Elo Ratings\n".format(self.league_name)
+        for row in player_table:
+            table_str += row[1]
+        return table_str
+
+    def getStats(self):
+        print(self.getPlayerRatings())
+
+## Private
+    def _addTeam(self, team):
+        team_info = list(map(str.strip, team.split(',')))
+        try:
+            existing_team = self._getTeam(team_id=team_info[0])
+        except ValueError:
+            self.teams[team_info[2]] = PlayerTeam(*team_info)
+        else:
+            existing_team.names.extend([team_info[2], team_info[1]])
 
 
 class EloPlotter(object):
