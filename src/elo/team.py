@@ -23,7 +23,7 @@ class Team(object):
 
     def __repr__(self):
         return "{}: {}".format(self.name, self.team_rating)
-        
+
 class PlayerTeam(Team):
     """A Professional League of Legends Team"""
     def __init__(self, team_id, abbrev, name, color="#000000", starting_rating=1500):
@@ -33,6 +33,15 @@ class PlayerTeam(Team):
         self.mid = []
         self.bot = []
         self.sup = []
+
+    def __repr__(self):
+        team_string = f"{self.name}: {self.team_rating}\n\t"
+        team_string += f"top: {self.top}\n\t"
+        team_string += f"jng: {self.jng}\n\t"
+        team_string += f"mid: {self.mid}\n\t"
+        team_string += f"bot: {self.bot}\n\t"
+        team_string += f"sup: {self.sup}\n\t"
+        return team_string
 
     def clearRoster(self):
         self.top = []

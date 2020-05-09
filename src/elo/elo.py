@@ -155,6 +155,8 @@ class PlayerEloRatingSystem(EloRatingSystem):
             team.clearRoster()
             for player in team_roster[1]:
                 role, player_name = player
+                if role not in ['Top Laner', 'Jungler', 'Mid Laner', 'Bot Laner', 'Support']:
+                    continue
                 player_obj = self.all_players.get(player_name)
                 if not player_obj:
                     player_obj = Player(player_name)
@@ -164,15 +166,23 @@ class PlayerEloRatingSystem(EloRatingSystem):
     def getPlayerRatings(self):
         player_table = []
         for _, player in self.all_players.items():
-            player_table.append((player.getRating(), f"  {player.name:>3}  {int(player.getRating())}\n"))
+            player_table.append((player.getRating(), f"{player.name:>25}  {int(player.getRating())}\n"))
         player_table.sort(key=lambda tup: tup[0], reverse=True)
         table_str = "{} Elo Ratings\n".format(self.league_name)
         for row in player_table:
             table_str += row[1]
         return table_str
 
-    def getStats(self):
+    def newSeasonReset(self):
+        self._align()
+        for _, team in self.teams.items():
+            team.rating_history.append([team.getRating()])
+
+    def printStats(self):
+        print(self._getBrier())
         print(self.getPlayerRatings())
+        data, colors = self._exportData()
+        EloPlotter.matplotlib_plot(self.league_name, data, colors)
 
 ## Private
     def _addTeam(self, team):
@@ -183,6 +193,32 @@ class PlayerEloRatingSystem(EloRatingSystem):
             self.teams[team_info[2]] = PlayerTeam(*team_info)
         else:
             existing_team.names.extend([team_info[2], team_info[1]])
+
+    def _align(self):
+        max_games = max([len(self.all_players[player].rating_history[-1]) for player in self.all_players])
+        for _, player in self.all_players.items():
+            if len(set(player.rating_history[-1])) == 1:
+                player.inactive = True
+            else:
+                player.inactive = False
+            game_diff = max_games - len(player.rating_history[-1])
+            player.rating_history[-1].extend([player.getRating()] * game_diff)
+        for _, team in self.teams.items():
+            if len(set(team.rating_history[-1])) == 1:
+                team.inactive = True
+            else:
+                team.inactive = False
+            game_diff = max_games - len(team.rating_history[-1])
+            team.rating_history[-1].extend([team.team_rating] * game_diff)
+
+    def _exportData(self):
+        data = {}
+        colors = {}
+        for player in self.all_players:
+            name = self.all_players[player].name
+            colors[name] = "#000000"
+            data[name] = self.all_players[player].rating_history
+        return data, colors
 
 
 class EloPlotter(object):
