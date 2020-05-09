@@ -25,16 +25,16 @@ The model currently has data going back to the beginning of franchising for the 
 
 ```
 LCS Elo Ratings
-   C9  1737
-   EG  1545
-   TL  1520
-  FLY  1509
-  TSM  1508
-  100  1500
-  DIG  1486
-  GGS  1471
-  IMT  1460
-  CLG  1394
+   C9  1758
+   EG  1540
+   TL  1519
+  FLY  1514
+  TSM  1507
+  100  1496
+  DIG  1480
+  IMT  1459
+  GGS  1451
+  CLG  1396
 ```
 
 ## LEC Predictions
@@ -45,16 +45,16 @@ The model is currently using data that goes back to Spring 2018. The plot below 
 
 ```
 LEC Elo Ratings
-   G2  1718
-  FNC  1649
-   OG  1565
-  MAD  1553
-  S04  1482
-  MSF  1481
-  RGE  1475
-   XL  1417
-   SK  1392
-  VIT  1361
+   G2  1750
+  FNC  1662
+   OG  1564
+  MAD  1548
+  RGE  1484
+  S04  1483
+  MSF  1480
+   XL  1420
+   SK  1394
+  VIT  1360
 ```
 
 ## LCK Predictions

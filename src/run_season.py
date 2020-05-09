@@ -1,5 +1,6 @@
 from elo import elo
 from get_league_data import Leaguepedia_DB
+from sys import argv
 
 SEASON_RESET = None
 seasons = {
@@ -82,4 +83,7 @@ def run_pleague(region):
             league.newSeasonReset()
     league.printStats()
 
-run_league("LCK")
+if len(argv) != 2:
+    exit()
+else:
+    run_league(argv[1])
