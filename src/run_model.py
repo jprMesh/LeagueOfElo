@@ -4,7 +4,7 @@ from sys import argv
 
 SEASON_RESET = None
 seasons = {
-    'LCS':[
+    'lcs':[
         "NA LCS 2018 Spring",
         "NA LCS 2018 Spring Playoffs",
         SEASON_RESET,
@@ -20,7 +20,7 @@ seasons = {
         "LCS 2020 Spring",
         "LCS 2020 Spring Playoffs",
         ],
-    'LEC':[
+    'lec':[
         "EU LCS 2018 Spring",
         "EU LCS 2018 Spring Playoffs",
         SEASON_RESET,
@@ -36,7 +36,7 @@ seasons = {
         "LEC 2020 Spring",
         "LEC 2020 Spring Playoffs",
         ],
-    'LCK':[
+    'lck':[
         "LCK 2019 Spring",
         "LCK 2019 Spring Playoffs",
         SEASON_RESET,
@@ -58,30 +58,16 @@ seasons = {
 }
 
 teamfiles = {
-    'LCS': '../cfg/LCS_teams.csv',
-    'LEC': '../cfg/LEC_teams.csv',
-    'LCK': '../cfg/LCK_teams.csv',
+    'lcs': '../cfg/LCS_teams.csv',
+    'lec': '../cfg/LEC_teams.csv',
+    'lck': '../cfg/LCK_teams.csv',
     'test': '../cfg/LCS_teams.csv'
 }
 
-def run_league(region):
+def run_model(model, region):
     season_list = seasons.get(region)
     teamfile = teamfiles.get(region)
-    league = elo.EloRatingSystem(region, teamfile, K=30)
-    lpdb = Leaguepedia_DB()
-
-    for season in season_list:
-        if season:
-            results = lpdb.get_season_results(season)
-            league.loadGames(results, "Playoffs" in season)
-        else:
-            league.newSeasonReset()
-    league.printStats()
-
-def run_pleague(region):
-    season_list = seasons.get(region)
-    teamfile = teamfiles.get(region)
-    league = elo.PlayerEloRatingSystem(region, teamfile, K=30)
+    league = model(region, teamfile, K=30)
     lpdb = Leaguepedia_DB()
 
     for season in season_list:
@@ -93,10 +79,11 @@ def run_pleague(region):
             league.newSeasonReset()
     league.printStats()
 
-if len(argv) != 2:
+
+if len(argv) < 3:
     exit()
 else:
-    if argv[1] != 'test':
-        run_pleague(argv[1])
-    else:
-        run_league(argv[1])
+    player_model = argv[1].lower() == 'player'
+    model = elo.PlayerEloRatingSystem if player_model else elo.EloRatingSystem
+    region = argv[2].lower()
+    run_model(model, region)

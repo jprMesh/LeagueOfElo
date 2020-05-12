@@ -48,6 +48,9 @@ class EloRatingSystem(object):
             if align:
                 self._align()
 
+    def loadRosters(self, rosters):
+        pass
+
     def newSeasonReset(self):
         self._align()
         for _, team in self.teams.items():
