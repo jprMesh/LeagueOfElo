@@ -59,7 +59,7 @@ LEC Elo Ratings
 
 ## LCK Predictions
 
-The model is currently using data that goes back to Spring 2019. This version of the model has a modifier for match score, which is highly relevant here since the LCK regular season uses Bo3s. The table below the figure shows the ratings of the LCS teams as of the end of the Spring Split 2020.
+The model is currently using data that goes back to Spring 2019. This version of the model has a modifier for match score, which is highly relevant here since the LCK regular season uses Bo3s. The table below the figure shows the ratings of the LCK teams as of the end of the Spring Split 2020.
 
 ![LCK Rating History](img/LCK_rating_history_2020_spring.png)
 
@@ -75,4 +75,31 @@ LCK Elo Ratings
    SB  1437
    AF  1431
   HLE  1378
+```
+
+## LPL Predictions
+
+The model is currently using data that goes back to Spring 2018. This version of the model has a modifier for match score, which is highly relevant here since the LPL regular season uses Bo3s. The table below the figure shows the ratings of the LPL teams as of the end of the Spring Split 2020.
+
+![LPL Rating History](img/LPL_rating_history_2020_spring.png)
+
+```
+LPL Elo Ratings
+  FPX  1719
+  JDG  1691
+  TES  1663
+   iG  1615
+  EDG  1570
+  RNG  1531
+   ES  1531
+  BLG  1519
+   WE  1513
+   SN  1461
+  DMO  1458
+   RW  1425
+  LNG  1410
+   VG  1406
+  LGD  1395
+  OMG  1375
+   V5  1209
 ```

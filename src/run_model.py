@@ -46,6 +46,22 @@ seasons = {
         "LCK 2020 Spring",
         "LCK 2020 Spring Playoffs",
         ],
+    'lpl':[
+        "LPL 2018 Spring",
+        "LPL 2018 Spring Playoffs",
+        SEASON_RESET,
+        "LPL 2018 Summer",
+        "LPL 2018 Summer Playoffs",
+        SEASON_RESET,
+        "LPL 2019 Spring",
+        "LPL 2019 Spring Playoffs",
+        SEASON_RESET,
+        "LPL 2019 Summer",
+        "LPL 2019 Summer Playoffs",
+        SEASON_RESET,
+        "LPL 2020 Spring",
+        "LPL 2020 Spring Playoffs",
+        ],
     'test':[
         "LCS 2019 Spring",
         "LCS 2019 Spring Playoffs",
@@ -61,13 +77,14 @@ teamfiles = {
     'lcs': '../cfg/LCS_teams.csv',
     'lec': '../cfg/LEC_teams.csv',
     'lck': '../cfg/LCK_teams.csv',
+    'lpl': '../cfg/LPL_teams.csv',
     'test': '../cfg/LCS_teams.csv'
 }
 
 def run_model(model, region):
     season_list = seasons.get(region)
     teamfile = teamfiles.get(region)
-    league = model(region, teamfile, K=30)
+    league = model(region.upper(), teamfile, K=30)
     lpdb = Leaguepedia_DB()
 
     for season in season_list:
