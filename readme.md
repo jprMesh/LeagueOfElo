@@ -3,7 +3,7 @@
 Elo rating system and game predictions for Professional League of Legends Teams
 
 ## Setup
-`pip3 install mwclient matplotlib`
+`pip3 install mwclient numpy matplotlib plotly`
 
 ## Fundamentals
 

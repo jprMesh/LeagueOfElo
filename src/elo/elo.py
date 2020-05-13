@@ -69,7 +69,8 @@ class EloRatingSystem(object):
         print(self._getBrier())
         print(self.getActiveTeamsRatings())
         data, colors = self._exportData()
-        EloPlotter.matplotlib_plot(self.league_name, data, colors)
+        #EloPlotter.matplotlib_plot(self.league_name, data, colors)
+        EloPlotter.plotly_plot(self.league_name, data, colors)
 
 ## Private
     def _addTeam(self, team):
@@ -138,10 +139,10 @@ class EloRatingSystem(object):
     def _exportData(self):
         data = {}
         colors = {}
-        for team in self.teams:
-            abbrev = self.teams[team].abbrev
-            colors[abbrev] = self.teams[team].color
-            data[abbrev] = self.teams[team].rating_history
+        for _, team in sorted(self.teams.items(), key=lambda item: item[1].getRating(), reverse=True):
+            abbrev = team.abbrev
+            colors[abbrev] = team.color
+            data[abbrev] = team.rating_history
         return data, colors
 
 
@@ -285,3 +286,44 @@ class EloPlotter(object):
         for team in adjusted_positions:
             text = plt.text(end_idx+1, team[0], team[1], color=colors[team[1]], weight='bold')
         plt.show()
+
+    @staticmethod
+    def plotly_plot(league, data, colors):
+        import plotly.graph_objects as go
+
+        x = list(range(1,16))
+        fig = go.Figure()
+        for team in data:
+            team_data = sum(data[team], [])
+            for i, d in enumerate(team_data):
+                if d == 1500 and team_data[i+1] == 1500:
+                    team_data[i] = None
+                else:
+                    break
+            x_series = list(range(0, len(team_data)))
+            fig.add_trace(go.Scatter(
+                x=x_series,
+                y=team_data,
+                name=f'{team}: {int(team_data[-1])}',
+                text=team,
+                hoverinfo='text+x+y',
+                line={'color':colors[team]}))
+
+        # Draw split boundaries
+        split_bound = -1
+        for split in data[list(data.keys())[0]]:
+            split_bound += len(split)
+            fig.add_shape(
+                type="rect",
+                xref="x",
+                yref="paper",
+                x0=split_bound,
+                y0=0,
+                x1=split_bound+1,
+                y1=1,
+                fillcolor="DarkGray",
+                opacity=0.5,
+                layer="above",
+                line_width=0)
+
+        fig.show()

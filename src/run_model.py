@@ -68,8 +68,6 @@ seasons = {
         SEASON_RESET,
         "LCS 2019 Summer",
         "LCS 2019 Summer Playoffs",
-        SEASON_RESET,
-        "LCS 2020 Spring",
     ]
 }
 
