@@ -290,7 +290,6 @@ class EloPlotter(object):
     @staticmethod
     def plotly_plot(league, data, colors):
         import plotly.graph_objects as go
-        import plotly.io as pio
 
         x = list(range(1,16))
         fig = go.Figure()
@@ -327,4 +326,5 @@ class EloPlotter(object):
                 layer="above",
                 line_width=0)
 
-        pio.write_html(fig, file=f'../www/{league}_elo.html', auto_open=True)
+        with open(f'../docs/{league}_elo.html', 'w') as div_file:
+            div_file.write(fig.to_html(full_html=False, include_plotlyjs='cdn'))
