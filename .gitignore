@@ -1,3 +1,5 @@
 *.pyc
 *.DS_Store
 leaguepedia_login.py
+Gemfile.lock
+_site
