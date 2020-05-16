@@ -1,19 +1,25 @@
 # League of Elo
 
-Elo rating system and game predictions for Professional League of Legends Teams
+Stats at [jprmesh.github.io/LeagueOfElo](https://jprmesh.github.io/LeagueOfElo)
+
+Elo-based prediction and rating system for Professional League of Legends Teams
 
 ## Setup
 
-To generate Elo charts:  
-`pip3 install mwclient numpy matplotlib plotly`  
-`cd src && python3 run_model.py team lcs`
+`pip3 install mwclient numpy matplotlib plotly`
 
-To run Jekyll site locally:  
+### Jekyll Site Local
+
 `gem install bundle`  
+
 `cd docs`  
+
 `bundle install`  
+
 `bundle exec jekyll serve`
 
-## Elo Rating History
+## Run Model
 
-See [jprmesh.github.io/LeagueOfElo](https://jprmesh.github.io/LeagueOfElo).
+`cd src`
+
+`python3 run_model.py <team|player> <lcs|lck|lec|lpl>`
