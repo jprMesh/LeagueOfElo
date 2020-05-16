@@ -290,29 +290,29 @@ class EloPlotter(object):
     @staticmethod
     def plotly_plot(league, data, colors):
         import plotly.graph_objects as go
+        import numpy as np
 
-        x = list(range(1,16))
+        split_lens = [len(split_len) for split_len in data[list(data.keys())[0]]]
+        split_bounds = np.cumsum(split_lens) - 1
         fig = go.Figure()
+
         for team in data:
+            end_rating = data[team][-1][-1]
+            for split, split_data in enumerate(data[team]):
+                if len(set(split_data)) == 1:
+                    data[team][split] = [None] * len(split_data)
             team_data = sum(data[team], [])
-            for i, d in enumerate(team_data):
-                if d == 1500 and team_data[i+1] == 1500:
-                    team_data[i] = None
-                else:
-                    break
             x_series = list(range(0, len(team_data)))
             fig.add_trace(go.Scatter(
                 x=x_series,
                 y=team_data,
-                name=f'{team}: {int(team_data[-1])}',
+                name=f'{team}: {int(end_rating)}',
                 text=team,
                 hoverinfo='text+x+y',
                 line={'color':colors[team]}))
 
         # Draw split boundaries
-        split_bound = -1
-        for split in data[list(data.keys())[0]]:
-            split_bound += len(split)
+        for split_bound in split_bounds:
             fig.add_shape(
                 type="rect",
                 xref="x",
