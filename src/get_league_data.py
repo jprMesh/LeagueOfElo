@@ -6,12 +6,24 @@ class Leaguepedia_DB(object):
         self.lpdb = mwclient.Site('lol.gamepedia.com', path='/')
         self.lpdb.login(login, key)
 
-    def get_season_results(self, season):
+    def getAllSeasons(self, region, earliest, region_alt='None'):
         r = self.lpdb.api('cargoquery',
                 limit = 'max',
-                tables = 'MatchSchedule=MS',
+                tables = 'Tournaments=T',
+                fields = 'T.Name',
+                where = f'(T.LeagueIconKey="{region}" OR T.LeagueIconKey="{region_alt}") AND T.DateStart>"{earliest}"',
+                order_by = 'T.DateStart ASC')
+
+        seasons = [m['title']['Name'] for m in r['cargoquery']]
+        return seasons
+
+    def getSeasonResults(self, season):
+        r = self.lpdb.api('cargoquery',
+                limit = 'max',
+                tables = 'MatchSchedule=MS, Tournaments=T',
                 fields = 'MS.Team1,MS.Team2,MS.Team1Score,MS.Team2Score',
-                where = f'MS.ShownName="{season}"',
+                join_on = 'T.OverviewPage=MS.OverviewPage',
+                where = f'T.Name="{season}"',
                 order_by = 'MS.DateTime_UTC ASC')
 
         matches = [(m['title']['Team1'],
@@ -53,7 +65,7 @@ class Leaguepedia_DB(object):
     def get_rosters_seasons(self, season):
         r = self.lpdb.api('cargoquery',
                 limit = 'max',
-                tables = "MatchScheduleGame=MSG,ScoreboardGame=SG",
+                tables = "MatchScheduleGame=MSG,ScoreboardGames=SG",
                 fields = "MSG.GameID_Wiki, SG.ScoreboardID_Wiki, SG.Team1Names, SG.Team2Names",
                 where = f'SG.Tournament="{season}"', 
                 join_on = "MSG.GameID_Wiki=SG.ScoreboardID_Wiki",
@@ -66,8 +78,9 @@ class Leaguepedia_DB(object):
 if __name__ == '__main__':
     from pprint import pprint
     lpdb = Leaguepedia_DB()
-    pprint(lpdb.getSeasonRosters('LCS 2020 Spring Playoffs'))
+    pprint(lpdb.getAllSeasons('LCK', '2018-01-01'))
 
+    #pprint(lpdb.getSeasonRosters('LCS 2020 Spring Playoffs'))
     #pprint(lpdb.get_season_games('LCS 2020 Spring Playoffs'))
     #print("\n")
     #pprint(lpdb.get_rosters_seasons('LCS 2020 Spring Playoffs'))

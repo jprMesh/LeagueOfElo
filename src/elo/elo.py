@@ -41,6 +41,11 @@ class EloRatingSystem(object):
             t1, t2, t1s, t2s = result
             if not t1s:
                 continue
+            try:
+                self._getTeam(t1)
+                self._getTeam(t2)
+            except ValueError as e:
+                continue
             winloss_args = ((t1, t2, int(t1s), int(t2s)) if
                             int(t1s) > int(t2s) else
                             (t2, t1, int(t2s), int(t1s)))
@@ -328,3 +333,4 @@ class EloPlotter(object):
 
         with open(f'../docs/{league}_elo.html', 'w') as div_file:
             div_file.write(fig.to_html(full_html=False, include_plotlyjs='cdn'))
+        fig.show()
