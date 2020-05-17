@@ -82,3 +82,7 @@ The model is currently using data that goes back to Spring 2019. This version of
 The model is currently using data that goes back to Spring 2018. This version of the model has a modifier for match score, which is highly relevant here since the LPL regular season uses Bo3s. The table below the figure shows the ratings of the LPL teams as of the end of the Spring Split 2020.
 
 {% include_relative LPL_elo.html %}
+
+---
+
+Big thanks to [Leaguepedia](https://lol.gamepedia.com/Help:API_Documentation) for maintaining databases with all the data used here!
