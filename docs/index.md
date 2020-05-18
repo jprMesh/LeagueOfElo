@@ -16,7 +16,7 @@ The implementation of this model is based on [FiveThirtyEight's NFL team elo rat
 The model makes predictions about how likely a team is to take victory over another team based on the following formula that takes into account Team 1's rating $$T_1$$ and Team 2's rating $$T_2$$.
 
 $$
-P(T_1) = \frac{1} {10^ {-(T_1 - T_2)} + 1}
+P(T_1) = \frac{1} {10^ {\frac{-(T_1 - T_2)} {400}} + 1}
 $$
 
 The prediction is expressed as a probability that one team beats the other, with the opposite being true for the other team in the match. After the match concludes, the model will calculate an adjustment value based on its earlier prediction and a few other factors, which will be discussed later. The winning team gains the adjustment value to its rating, and the losing team loses that many points. The formula for the adjustment value is 
