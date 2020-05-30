@@ -6,6 +6,36 @@ class Leaguepedia_DB(object):
         self.lpdb = mwclient.Site('lol.gamepedia.com', path='/')
         self.lpdb.login(login, key)
 
+    def _query(self, query_dict):
+        response = self.lpdb.api('cargoquery',
+                limit = 'max',
+                **query_dict)
+        return [row['title'] for row in response['cargoquery']]
+
+    def getRegions(self):
+        query_dict = {
+            'tables':'Tournaments',
+            'fields':'Region',
+            'group_by':'Region'}
+
+        rows = self._query(query_dict)
+        return [row['Region'] for row in rows]
+
+    def getTournaments(self, region, earliest=None, latest=None):
+        where = f'T.Region="{region}" AND T.TournamentLevel="Primary" AND T.IsOfficial="1" AND T.IsQualifier="0"'
+        if earliest:
+            where += f' AND T.DateStart>"{earliest}"'
+        if latest:
+            where += f' AND T.DateStart<"{latest}"'
+        query_dict = {
+            'tables': 'Tournaments=T',
+            'fields': 'T.Name',
+            'where': where,
+            'order_by': 'T.DateStart ASC'}
+
+        rows = self._query(query_dict)
+        return [row['Name'] for row in rows]
+
     def getAllSeasons(self, region, earliest, region_alt='None'):
         r = self.lpdb.api('cargoquery',
                 limit = 'max',
@@ -78,7 +108,8 @@ class Leaguepedia_DB(object):
 if __name__ == '__main__':
     from pprint import pprint
     lpdb = Leaguepedia_DB()
-    pprint(lpdb.getAllSeasons('LCK', '2018-01-01'))
+    pprint(lpdb.getRegions())
+    pprint(lpdb.getTournaments('North America', '2010-01-01'))
 
     #pprint(lpdb.getSeasonRosters('LCS 2020 Spring Playoffs'))
     #pprint(lpdb.get_season_games('LCS 2020 Spring Playoffs'))

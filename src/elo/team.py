@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Team(object):
     """A Professional League of Legends Team"""
     def __init__(self, team_id, abbrev, name, color="#000000", starting_rating=1500):
@@ -24,10 +25,23 @@ class Team(object):
     def __repr__(self):
         return "{}: {}".format(self.name, self.team_rating)
 
+
+class DummyTeam(Team):
+    """
+    A dummy team that always has the given rating and doesn't change.
+    Can be used as a proxy opponent when playing against unknown teams.
+    """
+    def __init__(self, starting_rating=1500):
+        super().__init__(-1, None, 'DummyTeam', None, starting_rating)
+
+    def updateRating(self, correction):
+        pass
+
+
 class PlayerTeam(Team):
     """A Professional League of Legends Team"""
     def __init__(self, team_id, abbrev, name, color="#000000", starting_rating=1500):
-        super(PlayerTeam, self).__init__(team_id, abbrev, name, color, starting_rating)
+        super().__init__(team_id, abbrev, name, color, starting_rating)
         self.top = []
         self.jng = []
         self.mid = []
@@ -76,6 +90,7 @@ class PlayerTeam(Team):
         super(PlayerTeam, self).updateRating(correction)
         for player in self.top + self.jng + self.mid + self.bot + self.sup:
             player.updateRating(correction)
+
 
 class Player(object):
     """A Professional League of Legends Player"""

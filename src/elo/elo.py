@@ -12,6 +12,7 @@ class EloRatingSystem(object):
         self.alignment = [0]
         self.season_boundary = []
         self.brier_scores = []
+        self.seasons = []
 
     def __repr__(self):
         team_table = []
@@ -41,11 +42,6 @@ class EloRatingSystem(object):
             t1, t2, t1s, t2s = result
             if not t1s:
                 continue
-            try:
-                self._getTeam(t1)
-                self._getTeam(t2)
-            except ValueError as e:
-                continue
             winloss_args = ((t1, t2, int(t1s), int(t2s)) if
                             int(t1s) > int(t2s) else
                             (t2, t1, int(t2s), int(t1s)))
@@ -56,7 +52,8 @@ class EloRatingSystem(object):
     def loadRosters(self, rosters):
         pass
 
-    def newSeasonReset(self):
+    def newSeasonReset(self, season_name):
+        self.seasons.append(season_name)
         self._align()
         for _, team in self.teams.items():
             if not team.inactive:
@@ -73,9 +70,9 @@ class EloRatingSystem(object):
     def printStats(self):
         print(self._getBrier())
         print(self.getActiveTeamsRatings())
-        data, colors = self._exportData()
+        data, colors, seasons = self._exportData()
         #EloPlotter.matplotlib_plot(self.league_name, data, colors)
-        EloPlotter.plotly_plot(self.league_name, data, colors)
+        EloPlotter.plotly_plot(self.league_name, data, colors, seasons)
 
 ## Private
     def _addTeam(self, team):
@@ -87,7 +84,7 @@ class EloRatingSystem(object):
         else:
             existing_team.names.extend([team_info[2], team_info[1]])
 
-    def _getTeam(self, team_name=None, team_id=None):
+    def _getTeam(self, team_name=None, team_id=None, default=None):
         team = self.teams.get(team_name)
         if not team:
             for _, t in self.teams.items():
@@ -95,7 +92,11 @@ class EloRatingSystem(object):
                     team = t
                     break
         if not team:
-            raise ValueError(f"Team does not exist: {team_name}")
+            if not default:
+                raise ValueError(f'Team does not exist: {team_name}')
+            else:
+                print(f"Using dummy team instead of {team_name}")
+                team = default
         return team
 
     def _getWinProb(self, team1, team2):
@@ -120,7 +121,8 @@ class EloRatingSystem(object):
         Adjust the model's understanding of two teams based on the outcome of a
         match between the two teams.
         """
-        winning_team, losing_team = self._getTeam(winner), self._getTeam(loser)
+        winning_team = self._getTeam(winner, default=DummyTeam(1400))
+        losing_team = self._getTeam(loser, default=DummyTeam(1400))
         forecast_delta = 1 - self._getWinProb(winning_team, losing_team)
         match_score_mult = self._getMatchScoreMultiplier(winner_score, loser_score)
         winning_team.updateRating(self.K * forecast_delta * match_score_mult)
@@ -148,7 +150,7 @@ class EloRatingSystem(object):
             abbrev = team.abbrev
             colors[abbrev] = team.color
             data[abbrev] = team.rating_history
-        return data, colors
+        return data, colors, self.seasons
 
 
 class PlayerEloRatingSystem(EloRatingSystem):
@@ -293,13 +295,14 @@ class EloPlotter(object):
         plt.show()
 
     @staticmethod
-    def plotly_plot(league, data, colors):
+    def plotly_plot(league, data, colors, seasons):
         import plotly.graph_objects as go
         import numpy as np
 
         split_lens = [len(split_len) for split_len in data[list(data.keys())[0]]]
         split_bounds = np.cumsum(split_lens) - 1
-        fig = go.Figure()
+        fig = go.Figure(layout_xaxis_showticklabels=False,
+                        layout_yaxis_title="Elo Rating")
 
         for team in data:
             end_rating = data[team][-1][-1]
@@ -317,7 +320,7 @@ class EloPlotter(object):
                 line={'color':colors[team]}))
 
         # Draw split boundaries
-        for split_bound in split_bounds:
+        for idx, split_bound in enumerate(split_bounds):
             fig.add_shape(
                 type="rect",
                 xref="x",
@@ -330,7 +333,16 @@ class EloPlotter(object):
                 opacity=0.5,
                 layer="above",
                 line_width=0)
+            if idx >= len(seasons):
+                continue
+            fig.add_annotation(
+                xref="x",
+                yref="paper",
+                showarrow=False,
+                x=(split_bound + split_bounds[idx+1])/2,
+                y=0,
+                text=seasons[idx])
 
-        with open(f'../docs/{league}_elo.html', 'w') as div_file:
+        with open(f'../docs/{league.replace(' ', '_')}_elo.html', 'w') as div_file:
             div_file.write(fig.to_html(full_html=False, include_plotlyjs='cdn'))
         fig.show()

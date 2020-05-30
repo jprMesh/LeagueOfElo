@@ -1,31 +1,25 @@
 from elo import elo
 from get_league_data import Leaguepedia_DB
 from sys import argv
+import time
 
 teamfiles = {
-    'LCS': '../cfg/LCS_teams.csv',
-    'LEC': '../cfg/LEC_teams.csv',
-    'LCK': '../cfg/LCK_teams.csv',
-    'LPL': '../cfg/LPL_teams.csv'
-}
-reset_seasons = ['Spring', 'Summer']
-region_alts = {
-    'LCS': 'NA LCS',
-    'LEC': 'EU LCS'
+    'North America': '../cfg/LCS_teams.csv',
+    'Europe': '../cfg/LEC_teams.csv',
+    'Korea': '../cfg/LCK_teams.csv',
+    'China': '../cfg/LPL_teams.csv'
 }
 
 def run_model(model, region):
     lpdb = Leaguepedia_DB()
-    region_alt = region_alts.get(region, 'None')
-    season_list = lpdb.getAllSeasons(region, '2018-01-01', region_alt)
+    today = time.strftime('%Y-%m-%d')
+    season_list = lpdb.getTournaments(region, '2017-01-01', today)
     teamfile = teamfiles.get(region)
     league = model(region, teamfile, K=30)
 
     for season in season_list:
-        if "Promotion" in season:
-            continue
-        if season.split()[-1] in reset_seasons:
-            league.newSeasonReset()
+        if season.split()[-1] in ['Spring', 'Summer']:
+            league.newSeasonReset(season)
         league.loadRosters(lpdb.getSeasonRosters(season))
         results = lpdb.getSeasonResults(season)
         print(season, len(results))
@@ -38,5 +32,5 @@ if len(argv) < 3:
 else:
     player_model = argv[1].lower() == 'player'
     model = elo.PlayerEloRatingSystem if player_model else elo.EloRatingSystem
-    region = argv[2].upper()
+    region = argv[2].replace('_', ' ')
     run_model(model, region)
