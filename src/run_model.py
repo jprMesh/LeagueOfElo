@@ -3,17 +3,25 @@ from get_league_data import Leaguepedia_DB
 from sys import argv
 import time
 
+
 teamfiles = {
     'North America': '../cfg/LCS_teams.csv',
     'Europe': '../cfg/LEC_teams.csv',
     'Korea': '../cfg/LCK_teams.csv',
     'China': '../cfg/LPL_teams.csv'
 }
+regions = {
+    'NA': 'North America',
+    'EU': 'Europe',
+    'KR': 'Korea',
+    'CN': 'China'
+}
+
 
 def run_model(model, region):
     lpdb = Leaguepedia_DB()
     today = time.strftime('%Y-%m-%d')
-    season_list = lpdb.getTournaments(region, '2017-01-01', today)
+    season_list = lpdb.getTournaments(region, '2016-01-01', today)
     teamfile = teamfiles.get(region)
     league = model(region, teamfile, K=30)
 
@@ -32,5 +40,5 @@ if len(argv) < 3:
 else:
     player_model = argv[1].lower() == 'player'
     model = elo.PlayerEloRatingSystem if player_model else elo.EloRatingSystem
-    region = argv[2].replace('_', ' ')
+    region = regions.get(argv[2])
     run_model(model, region)

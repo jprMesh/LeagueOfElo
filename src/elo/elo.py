@@ -1,4 +1,5 @@
 from .team import *
+import re
 
 class EloRatingSystem(object):
     """Elo Rating System for a single league"""
@@ -53,7 +54,7 @@ class EloRatingSystem(object):
         pass
 
     def newSeasonReset(self, season_name):
-        self.seasons.append(season_name)
+        self.seasons.append(season_name[re.search('\d\d\d\d', season_name).start():])
         self._align()
         for _, team in self.teams.items():
             if not team.inactive:
@@ -343,6 +344,7 @@ class EloPlotter(object):
                 y=0,
                 text=seasons[idx])
 
-        with open(f'../docs/{league.replace(' ', '_')}_elo.html', 'w') as div_file:
+        league = league.replace(' ', '_')
+        with open(f'../docs/{league}_elo.html', 'w') as div_file:
             div_file.write(fig.to_html(full_html=False, include_plotlyjs='cdn'))
         fig.show()

@@ -1,6 +1,7 @@
 import mwclient
 from leaguepedia_login import login, key
 
+
 class Leaguepedia_DB(object):
     def __init__(self):
         self.lpdb = mwclient.Site('lol.gamepedia.com', path='/')
@@ -35,17 +36,6 @@ class Leaguepedia_DB(object):
 
         rows = self._query(query_dict)
         return [row['Name'] for row in rows]
-
-    def getAllSeasons(self, region, earliest, region_alt='None'):
-        r = self.lpdb.api('cargoquery',
-                limit = 'max',
-                tables = 'Tournaments=T',
-                fields = 'T.Name',
-                where = f'(T.LeagueIconKey="{region}" OR T.LeagueIconKey="{region_alt}") AND T.DateStart>"{earliest}"',
-                order_by = 'T.DateStart ASC')
-
-        seasons = [m['title']['Name'] for m in r['cargoquery']]
-        return seasons
 
     def getSeasonResults(self, season):
         r = self.lpdb.api('cargoquery',
@@ -105,13 +95,9 @@ class Leaguepedia_DB(object):
                    for m in r['cargoquery']]
         return matches
 
+
 if __name__ == '__main__':
     from pprint import pprint
     lpdb = Leaguepedia_DB()
     pprint(lpdb.getRegions())
-    pprint(lpdb.getTournaments('North America', '2010-01-01'))
-
-    #pprint(lpdb.getSeasonRosters('LCS 2020 Spring Playoffs'))
-    #pprint(lpdb.get_season_games('LCS 2020 Spring Playoffs'))
-    #print("\n")
-    #pprint(lpdb.get_rosters_seasons('LCS 2020 Spring Playoffs'))
+    pprint(lpdb.getTournaments('Europe', '2010-01-01'))
