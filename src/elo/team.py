@@ -3,7 +3,7 @@ import numpy as np
 
 class Team(object):
     """A Professional League of Legends Team"""
-    def __init__(self, team_id, abbrev, name, color="#000000", starting_rating=1500):
+    def __init__(self, team_id, abbrev, name, color="#868686", starting_rating=1500):
         self.team_id = team_id
         self.abbrev = abbrev
         self.name = name

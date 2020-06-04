@@ -43,9 +43,10 @@ class EloRatingSystem(object):
             t1, t2, t1s, t2s = result
             if not t1s:
                 continue
-            winloss_args = ((t1, t2, int(t1s), int(t2s)) if
+            tie = (int(t1s) == int(t2s))
+            winloss_args = ((t1, t2, int(t1s), int(t2s), tie) if
                             int(t1s) > int(t2s) else
-                            (t2, t1, int(t2s), int(t1s)))
+                            (t2, t1, int(t2s), int(t1s), tie))
             self._adjustRating(*winloss_args)
             if align:
                 self._align()
@@ -117,15 +118,20 @@ class EloRatingSystem(object):
         multiplier = ((w-l)*w/(w+l))**0.7
         return multiplier
 
-    def _adjustRating(self, winner, loser, winner_score, loser_score):
+    def _adjustRating(self, winner, loser, winner_score, loser_score, tie):
         """
         Adjust the model's understanding of two teams based on the outcome of a
         match between the two teams.
         """
         winning_team = self._getTeam(winner, default=DummyTeam(1400))
         losing_team = self._getTeam(loser, default=DummyTeam(1400))
+        if tie:  # In a tie, the team with the lower rating is considered the winner
+            if winning_team.getRating() > losing_team.getRating():
+                winning_team, losing_team = losing_team, winning_team
         forecast_delta = 1 - self._getWinProb(winning_team, losing_team)
         match_score_mult = self._getMatchScoreMultiplier(winner_score, loser_score)
+        if tie:
+            match_score_mult = 0.25
         winning_team.updateRating(self.K * forecast_delta * match_score_mult)
         losing_team.updateRating(self.K * -forecast_delta * match_score_mult)
         self.brier_scores.append(forecast_delta**2)
@@ -312,13 +318,15 @@ class EloPlotter(object):
                     data[team][split] = [None] * len(split_data)
             team_data = sum(data[team], [])
             x_series = list(range(0, len(team_data)))
+            team_inactive = team_data[-1] == None
             fig.add_trace(go.Scatter(
                 x=x_series,
                 y=team_data,
                 name=f'{team}: {int(end_rating)}',
                 text=team,
                 hoverinfo='text+x+y',
-                line={'color':colors[team]}))
+                line={'color':colors[team]},
+                legendgroup='Inactive' if team_inactive else 'Active'))
 
         # Draw split boundaries
         for idx, split_bound in enumerate(split_bounds):

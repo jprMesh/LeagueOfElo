@@ -21,7 +21,7 @@ regions = {
 def run_model(model, region):
     lpdb = Leaguepedia_DB()
     today = time.strftime('%Y-%m-%d')
-    season_list = lpdb.getTournaments(region, '2016-01-01', today)
+    season_list = lpdb.getTournaments(region, '2015-01-01', today)
     teamfile = teamfiles.get(region)
     league = model(region, teamfile, K=30)
 
