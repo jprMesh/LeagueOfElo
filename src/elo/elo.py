@@ -352,7 +352,6 @@ class EloPlotter(object):
                 y=0,
                 text=seasons[idx])
 
-        league = league.replace(' ', '_')
         with open(f'../docs/{league}_elo.html', 'w') as div_file:
             div_file.write(fig.to_html(full_html=False, include_plotlyjs='cdn'))
         fig.show()

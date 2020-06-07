@@ -3,12 +3,15 @@
 201,    DRX,    DragonX,            #6588FE
 201,    KZ,     Kingzone DragonX
 201,    LZ,     Longzhu Gaming
+201,    IM,     Incredible Miracle
 202,    KT,     KT Rolster,         #E8112A
 203,    GEN,    Gen.G,              #A98E30
 203,    KSV,    KSV eSports
 203,    SSG,    Samsung Galaxy
 204,    HLE,    Hanwha Life Esports,#EE7529
 205,    AF,     Afreeca Freecs,     #3381FE
+205,    RANC,   Rebels Anarchy
+205,    ANC,    Anarchy
 206,    DWG,    DAMWON Gaming,      #5A989D
 207,    SB,     SANDBOX Gaming,     #7E0121
 208,    GRF,    Griffin,            #D30C24
@@ -16,5 +19,13 @@
 210,    JAG,    Jin Air Green Wings,#21AB39
 211,    MVP,    MVP,                #2774BD
 212,    KDM,    Kongdoo Monster,    #408B77
+212,    EMF,    e-mFire
+212,    NaJin,  NaJin e-mFire
 213,    BBQ,    bbq Olivers,        #F18F1D
+213,    ESC,    ESC Ever
 214,    ROX,    ROX Tigers,         #E23F19
+214,    KOO,    KOO Tigers
+214,    GET,    GE Tigers
+215,    E8W,    Ever8 Winners
+216,    CJ,     CJ Entus
+217,    SBENU,  SBENU Sonicboom

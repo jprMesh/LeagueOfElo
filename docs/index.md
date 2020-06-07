@@ -59,27 +59,27 @@ Since some teams play more games than others due to playoffs and tiebreakers, th
 
 # League Models
 
-The following charts shows the Elo ratings of teams over time. Any team renamings/rebrands show the most recent name for the entire team history. The legend on the right of each chart shows the most recent rating for each team.
+The following charts shows the Elo ratings of teams over time. Any team renamings/rebrands show the most recent name for the entire team history. The legend on the right of each chart shows the most recent rating for each team and separates the currently active teams from the inactive teams. The zoom tool allows closer inspection of sections of the graph by clicking and dragging a box around the area of interest.
 
 ## LCS
 
-{% include_relative North_America_elo.html %}
+{% include_relative NA_elo.html %}
 
 ## LEC
 
-{% include_relative Europe_elo.html %}
+{% include_relative EU_elo.html %}
 
 ## LCK
 
 Of note here is that the LCK regular season uses Bo3s rather than Bo1s.
 
-{% include_relative Korea_elo.html %}
+{% include_relative KR_elo.html %}
 
 ## LPL
 
 The LPL also uses Bo3s in the regular season.
 
-{% include_relative China_elo.html %}
+{% include_relative CN_elo.html %}
 
 ---
 

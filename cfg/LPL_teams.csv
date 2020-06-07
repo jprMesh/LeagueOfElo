@@ -3,12 +3,14 @@
 302,    TES,    Top Esports,        #F93B2C
 302,    TOP,    Topsports Gaming
 303,    JDG,    JD Gaming,          #D5061F
+303,    QG,     QG Reapers
 304,    ES,     eStar (Chinese Team),#3B3E98
 305,    EDG,    EDward Gaming,      #1C110C
 306,    RNG,    Royal Never Give Up,#B2936C
 307,    WE,     Team WE,            #D91A2F
 308,    VG,     Vici Gaming,        #83F15D
 309,    BLG,    Bilibili Gaming,    #1B4D9B
+309,    IM,     I May
 310,    SN,     Suning,             #EA8325
 311,    OMG,    Oh My God,          #000000
 312,    RW,     Rogue Warriors,     #D21544
@@ -18,3 +20,11 @@
 315,    LNG,    LNG Esports,        #3185F3
 315,    SS,     Snake Esports
 316,    V5,     Victory Five,       #B49468
+318,    NB,     Newbee
+318,    QG,     Qiao Gu Reapers
+319,    GT,     Game Talents
+319,    EP,     Energy Pacemaker.All
+320,    DAN,    DAN Gaming
+321,    SG,     Saint Gaming
+321,    HYG,    Hyper Youth Gaming
+322,    M3,     Masters 3

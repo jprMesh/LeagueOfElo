@@ -1,29 +1,23 @@
 from elo import elo
 from get_league_data import Leaguepedia_DB
-from sys import argv
-import time
+from typing import Dict
+from time import strftime
+import argparse
 
 
 teamfiles = {
-    'North America': '../cfg/LCS_teams.csv',
-    'Europe': '../cfg/LEC_teams.csv',
-    'Korea': '../cfg/LCK_teams.csv',
-    'China': '../cfg/LPL_teams.csv'
-}
-regions = {
-    'NA': 'North America',
-    'EU': 'Europe',
-    'KR': 'Korea',
-    'CN': 'China'
+    'NA': '../cfg/LCS_teams.csv',
+    'EU': '../cfg/LEC_teams.csv',
+    'KR': '../cfg/LCK_teams.csv',
+    'CN': '../cfg/LPL_teams.csv'
 }
 
 
-def run_model(model, region):
+def runModel(model, region, start_year, stop_date):
     lpdb = Leaguepedia_DB()
-    today = time.strftime('%Y-%m-%d')
-    season_list = lpdb.getTournaments(region, '2015-01-01', today)
     teamfile = teamfiles.get(region)
     league = model(region, teamfile, K=30)
+    season_list = lpdb.getTournaments(region, f'{start_year}-01-01', stop_date)
 
     for season in season_list:
         if season.split()[-1] in ['Spring', 'Summer']:
@@ -35,10 +29,20 @@ def run_model(model, region):
     league.printStats()
 
 
-if len(argv) < 3:
-    exit()
-else:
-    player_model = argv[1].lower() == 'player'
-    model = elo.PlayerEloRatingSystem if player_model else elo.EloRatingSystem
-    region = regions.get(argv[2])
-    run_model(model, region)
+def parseArgs() -> Dict:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('region', choices=['NA', 'EU', 'KR', 'CN'],
+                        help='Region to run the model on.')
+    parser.add_argument('start_year', nargs='?', type=int, choices=range(2010, int(strftime('%Y'))+1), default=2010,
+                        help='Year from which to start training the model. Defaults to 2010.')
+    parser.add_argument('stop_date', nargs='?', type=str, default=strftime('%Y-%m-%d'),
+                        help='Date to stop processing data in YYYY-MM-DD format. Defaults to current day.')
+    parser.add_argument('--player_model', '-p', dest='model', action='store_const',
+                        const=elo.PlayerEloRatingSystem, default=elo.EloRatingSystem,
+                        help='Use the player-based elo model rather than the team-based rating system')
+    return vars(parser.parse_args())
+
+
+if __name__ == '__main__':
+    args = parseArgs()
+    runModel(**args)

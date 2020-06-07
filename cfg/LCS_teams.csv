@@ -2,6 +2,7 @@
 001,  C9,     Cloud9,                 #2497D3
 002,  DIG,    Dignitas,               #FCDE4B
 002,  CG,     Clutch Gaming,          #CC0133
+002,  APX,    Apex Gaming
 003,  CLG,    Counter Logic Gaming,   #00B4E5
 004,  EG,     Evil Geniuses.NA,       #0C121F
 005,  FOX,    Echo Fox,               #E07026
@@ -11,11 +12,10 @@
 009,  OPT,    OpTic Gaming,           #9CC538
 010,  TL,     Team Liquid,            #0C223F
 011,  TSM,    Team SoloMid,           #252527
-012,  NV,     Team EnVyUs
-013,  P1,     Phoenix1
-014,  APX,    Apex Gaming
-015,  NRG,    NRG Esports
-016,  TIP,    Team Impulse
+012,  NV,     Team EnVyUs,            #000000
+013,  P1,     Phoenix1,               #EE7D1C
+015,  NRG,    NRG Esports,            #D00080
+016,  TIP,    Team Impulse,           #F31E53
 017,  REN,    Renegades
 018,  GRV,    Gravity
 019,  T8,     Team 8
