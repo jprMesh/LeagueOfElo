@@ -25,7 +25,7 @@ def runModel(model, region, start_year, stop_date):
         league.loadRosters(lpdb.getSeasonRosters(season))
         results = lpdb.getSeasonResults(season)
         print(season, len(results))
-        league.loadGames(results, "Playoffs" in season)
+        league.loadGames(results, 'Playoffs' in season)
     league.printStats()
 
 

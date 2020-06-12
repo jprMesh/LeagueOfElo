@@ -38,18 +38,20 @@ class EloRatingSystem(object):
             table_str += row[1]
         return table_str
 
-    def loadGames(self, results, align=False):
+    def loadGames(self, results, playoffs=False):
+        last_round = None
         for result in results:
-            t1, t2, t1s, t2s = result
-            if not t1s:
+            t1, t2, t1s, t2s, match_round = result
+            if not t1s or not match_round:
                 continue
             tie = (int(t1s) == int(t2s))
             winloss_args = ((t1, t2, int(t1s), int(t2s), tie) if
                             int(t1s) > int(t2s) else
                             (t2, t1, int(t2s), int(t1s), tie))
             self._adjustRating(*winloss_args)
-            if align:
+            if playoffs and last_round != match_round:
                 self._align()
+            last_round = match_round
 
     def loadRosters(self, rosters):
         pass

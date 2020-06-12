@@ -27,7 +27,8 @@ class Leaguepedia_DB(object):
             'NA': 'North America',
             'EU': 'Europe',
             'KR': 'Korea',
-            'CN': 'China'}
+            'CN': 'China',
+            'INT': 'International'}
         region = regions.get(region_abbrev)
         where = f'T.Region="{region}" AND T.TournamentLevel="Primary" AND T.IsOfficial="1" AND T.IsQualifier="0"'
         if earliest:
@@ -47,7 +48,7 @@ class Leaguepedia_DB(object):
         r = self.lpdb.api('cargoquery',
                 limit = 'max',
                 tables = 'MatchSchedule=MS, Tournaments=T',
-                fields = 'MS.Team1,MS.Team2,MS.Team1Score,MS.Team2Score',
+                fields = 'MS.Team1,MS.Team2,MS.Team1Score,MS.Team2Score,MS.Tab',
                 join_on = 'T.OverviewPage=MS.OverviewPage',
                 where = f'T.Name="{season}"',
                 order_by = 'MS.DateTime_UTC ASC')
@@ -55,7 +56,8 @@ class Leaguepedia_DB(object):
         matches = [(m['title']['Team1'],
                     m['title']['Team2'],
                     m['title']['Team1Score'],
-                    m['title']['Team2Score'])
+                    m['title']['Team2Score'],
+                    m['title']['Tab'])
                    for m in r['cargoquery']]
         return matches
 
@@ -105,5 +107,6 @@ class Leaguepedia_DB(object):
 if __name__ == '__main__':
     from pprint import pprint
     lpdb = Leaguepedia_DB()
-    pprint(lpdb.getRegions())
-    pprint(lpdb.getTournaments('Europe', '2010-01-01'))
+    #pprint(lpdb.getRegions())
+    #pprint(lpdb.getTournaments('INT', '2010-01-01'))
+    pprint(lpdb.getSeasonResults('LPL 2017 Summer Playoffs'))
