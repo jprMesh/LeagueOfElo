@@ -74,6 +74,7 @@ class EloRatingSystem(object):
     def printStats(self):
         print(self._getBrier())
         print(self.getActiveTeamsRatings())
+        self._align()
         data, colors, seasons = self._exportData()
         #EloPlotter.matplotlib_plot(self.league_name, data, colors)
         EloPlotter.plotly_plot(self.league_name, data, colors, seasons)
