@@ -15,7 +15,8 @@
 206,    DWG,    DAMWON Gaming,      #5A989D
 207,    SB,     SANDBOX Gaming,     #7E0121
 208,    GRF,    Griffin,            #D30C24
-209,    APK,    APK Prince,         #D3454A
+209,    SP,     SeolHaeOne Prince,  #D3454A
+209,    APK,    APK Prince
 210,    JAG,    Jin Air Green Wings,#21AB39
 211,    MVP,    MVP,                #2774BD
 212,    KDM,    Kongdoo Monster,    #408B77
@@ -29,3 +30,4 @@
 215,    E8W,    Ever8 Winners
 216,    CJ,     CJ Entus
 217,    SBENU,  SBENU Sonicboom
+218,    TD,     Team Dynamics,      #2C73BD

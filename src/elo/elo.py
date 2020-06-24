@@ -13,6 +13,7 @@ class EloRatingSystem(object):
         self.alignment = [0]
         self.season_boundary = []
         self.brier_scores = []
+        self.up_down = []
         self.seasons = []
 
     def __repr__(self):
@@ -73,7 +74,8 @@ class EloRatingSystem(object):
 
     def printStats(self):
         print(self._getBrier())
-        print(self.getActiveTeamsRatings())
+        print(self._getUpDown())
+        #print(self.getActiveTeamsRatings())
         self._align()
         data, colors, seasons = self._exportData()
         #EloPlotter.matplotlib_plot(self.league_name, data, colors)
@@ -137,6 +139,7 @@ class EloRatingSystem(object):
             match_score_mult = 0.25
         winning_team.updateRating(self.K * forecast_delta * match_score_mult)
         losing_team.updateRating(self.K * -forecast_delta * match_score_mult)
+        self.up_down.append(forecast_delta < .5)
         self.brier_scores.append(forecast_delta**2)
 
     def _align(self):
@@ -152,6 +155,12 @@ class EloRatingSystem(object):
     def _getBrier(self):
         brier = sum(self.brier_scores)/len(self.brier_scores)
         return f"Brier Score: {brier:.4f}"
+
+    def _getUpDown(self):
+        up = sum(self.up_down)
+        down = len(self.up_down) - up
+        pct = up/(up+down)*100
+        return f"Up Down Record: {up} - {down} ({pct:.2f}%)"
 
     def _exportData(self):
         data = {}

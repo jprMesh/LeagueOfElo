@@ -6,16 +6,16 @@ import argparse
 
 
 teamfiles = {
-    'NA': '../cfg/LCS_teams.csv',
-    'EU': '../cfg/LEC_teams.csv',
-    'KR': '../cfg/LCK_teams.csv',
-    'CN': '../cfg/LPL_teams.csv'
+    'NA': ('../cfg/LCS_teams.csv', 2015),
+    'EU': ('../cfg/LEC_teams.csv', 2015),
+    'KR': ('../cfg/LCK_teams.csv', 2015),
+    'CN': ('../cfg/LPL_teams.csv', 2016),
 }
 
 
-def runModel(model, region, start_year, stop_date):
+def runModel(model, region, stop_date):
     lpdb = Leaguepedia_DB()
-    teamfile = teamfiles.get(region)
+    teamfile, start_year = teamfiles.get(region)
     league = model(region, teamfile, K=30)
     season_list = lpdb.getTournaments(region, f'{start_year}-01-01', stop_date)
 
@@ -33,8 +33,6 @@ def parseArgs() -> Dict:
     parser = argparse.ArgumentParser()
     parser.add_argument('region', choices=['NA', 'EU', 'KR', 'CN'],
                         help='Region to run the model on.')
-    parser.add_argument('start_year', nargs='?', type=int, choices=range(2010, int(strftime('%Y'))+1), default=2010,
-                        help='Year from which to start training the model. Defaults to 2010.')
     parser.add_argument('stop_date', nargs='?', type=str, default=strftime('%Y-%m-%d'),
                         help='Date to stop processing data in YYYY-MM-DD format. Defaults to current day.')
     parser.add_argument('--player_model', '-p', dest='model', action='store_const',
