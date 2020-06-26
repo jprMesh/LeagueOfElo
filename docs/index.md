@@ -59,7 +59,13 @@ Since some teams play more games than others due to playoffs and tiebreakers, th
 
 # League Models
 
-The following charts shows the Elo ratings of teams over time. Any team renamings/rebrands show the most recent name for the entire team history. The legend on the right of each chart shows the most recent rating for each team and separates the currently active teams from the inactive teams. The zoom tool allows closer inspection of sections of the graph by clicking and dragging a box around the area of interest.
+The following charts shows the Elo ratings of teams over time. Any team renamings/rebrands show the most recent name for the entire team history. The legend on the right of each chart shows the most recent rating for each team and separates the currently active teams from the inactive teams. The zoom tool allows closer inspection of sections of the graph by clicking and dragging around the area of interest. It should be noted that predictions in LCK and LPL are generally better because they use Bo3s in their regular season rather than Bo1s.
+
+International competitions have an interesting way of modifying a whole region's overall rating due to the zero-sum aspect of Elo rating system. Teams that improve their rating will take that point gain back to their regional league, while teams whose ratings drop will take that loss back to their regional league. Effectively, the winning regions steal points from the losing regions, which accumulates over time into some regions having higher averages than others.
+
+## Global
+
+{% include_relative NA_EU_KR_CN_INT_elo.html %}
 
 ## LCS
 

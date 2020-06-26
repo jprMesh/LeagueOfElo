@@ -27,7 +27,7 @@ def runMultiRegion(model, region, stop_date):
         teamfile, region_start_year = TEAMFILES.get(region)
         teamfiles.append(teamfile)
         start_year = max(start_year, region_start_year)
-    league = model(','.join(regions), teamfiles, K=30)
+    league = model('_'.join(regions), teamfiles, K=30)
     lpdb = Leaguepedia_DB()
     season_list = lpdb.getTournaments(regions, start_year, stop_date)
     season_list = filter(lambda x: all([t not in x for t in IGNORE_TOURNAMENTS]), season_list)
