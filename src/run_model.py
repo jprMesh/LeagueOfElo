@@ -35,12 +35,15 @@ def runMultiRegion(model, region, stop_date):
     year = None
     split = None
     for season in season_list:
-        new_split = re.search('(Spring|Summer|MSI|Worlds)', season)
+        new_split = re.search('(Spring|Summer|MSI|Worlds|Mid-Season Cup)', season)
         if new_split and new_split[0] != split:
             split = new_split[0]
             year = re.search('\d\d\d\d', season)[0]
             print(f'{year} {split}')
-            league.newSeasonReset(f'{year} {split}', rating_reset=split in ['MSI', 'Worlds'])
+            if split in ['Spring', 'Summer']:
+                league.newSeasonReset(f'{year} {split}')
+            else:
+                league.newSeasonReset(split, rating_reset=True)
         league.loadRosters(lpdb.getSeasonRosters(season))
         results = lpdb.getSeasonResults(season)
         #print(season, len(results))

@@ -368,7 +368,7 @@ class EloPlotter(object):
                 yref="paper",
                 showarrow=False,
                 x=(split_bound + split_bounds[idx+1])/2,
-                y=0,
+                y=0.04*(idx%2),
                 text=seasons[idx])
 
         with open(f'../docs/{league}_elo.html', 'w') as div_file:
