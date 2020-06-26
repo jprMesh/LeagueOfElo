@@ -22,15 +22,15 @@ class Leaguepedia_DB(object):
         rows = self._query(query_dict)
         return [row['Region'] for row in rows]
 
-    def getTournaments(self, region_abbrev, earliest=None, latest=None):
+    def getTournaments(self, region_list, earliest=None, latest=None):
         regions = {
             'NA': 'North America',
             'EU': 'Europe',
             'KR': 'Korea',
             'CN': 'China',
             'INT': 'International'}
-        region = regions.get(region_abbrev)
-        where = f'T.Region="{region}" AND T.TournamentLevel="Primary" AND T.IsOfficial="1" AND T.IsQualifier="0"'
+        region_query = ' OR '.join(map('T.region="{}"'.format, map(regions.get, region_list)))
+        where = f'({region_query}) AND T.TournamentLevel="Primary" AND T.IsOfficial="1" AND T.IsQualifier="0"'
         if earliest:
             where += f' AND T.DateStart>"{earliest}"'
         if latest:

@@ -3,13 +3,14 @@ import re
 
 class EloRatingSystem(object):
     """Elo Rating System for a single league"""
-    def __init__(self, league, teamfile, K=20):
+    def __init__(self, league, teamfiles, K=20):
         self.league_name = league
         self.K = K
         self.teams = {}
-        with open(teamfile, 'r') as teams:
-            for team in teams:
-                self._addTeam(team)
+        for teamfile in teamfiles:
+            with open(teamfile, 'r') as teams:
+                for team in teams:
+                    self._addTeam(team)
         self.alignment = [0]
         self.season_boundary = []
         self.brier_scores = []
@@ -40,28 +41,34 @@ class EloRatingSystem(object):
         return table_str
 
     def loadGames(self, results, playoffs=False):
-        last_round = None
         for result in results:
             t1, t2, t1s, t2s, match_round = result
-            if not t1s or not match_round:
+            if not t1s:
                 continue
+            try:
+                self._getTeam(t1)
+            except ValueError:
+                try:
+                    self._getTeam(t2)
+                except ValueError:
+                    continue
             tie = (int(t1s) == int(t2s))
             winloss_args = ((t1, t2, int(t1s), int(t2s), tie) if
                             int(t1s) > int(t2s) else
                             (t2, t1, int(t2s), int(t1s), tie))
             self._adjustRating(*winloss_args)
-            if playoffs and last_round != match_round:
-                self._align()
-            last_round = match_round
 
     def loadRosters(self, rosters):
         pass
 
-    def newSeasonReset(self, season_name):
-        self.seasons.append(season_name[re.search('\d\d\d\d', season_name).start():])
+    def newSeasonReset(self, season_name, rating_reset=None):
+        try:
+            self.seasons.append(season_name[re.search('\d\d\d\d', season_name).start():])
+        except:
+            self.seasons.append(season_name)
         self._align()
         for _, team in self.teams.items():
-            if not team.inactive:
+            if not rating_reset:
                 team.team_rating = team.getRating()*0.75 + 1500*0.25
             team.rating_history.append([team.getRating()])
 
