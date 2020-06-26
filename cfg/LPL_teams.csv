@@ -20,11 +20,16 @@
 315,    LNG,    LNG Esports,        #3185F3
 315,    SS,     Snake Esports
 316,    V5,     Victory Five,       #B49468
-318,    NB,     Newbee
+318,    NB,     Newbee,             #429DD1
 318,    QG,     Qiao Gu Reapers
 319,    GT,     Game Talents
 319,    EP,     Energy Pacemaker.All
+319,    EP,     Energy Pacemaker
 320,    DAN,    DAN Gaming
 321,    SG,     Saint Gaming
 321,    HYG,    Hyper Youth Gaming
 322,    M3,     Masters 3
+323,    TK,     Team King
+324,    GT,     Gamtee
+325,    UP,     Unlimited Potential
+326,    SHRC,   Star Horn Royal Club,#B2936C

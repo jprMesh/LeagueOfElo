@@ -10,7 +10,7 @@ TEAMFILES = {
     'NA': ('../cfg/LCS_teams.csv', 2015),
     'EU': ('../cfg/LEC_teams.csv', 2015),
     'KR': ('../cfg/LCK_teams.csv', 2015),
-    'CN': ('../cfg/LPL_teams.csv', 2016),
+    'CN': ('../cfg/LPL_teams.csv', 2015),
     'INT': ('../cfg/INT_teams.csv', 2015),
 }
 IGNORE_TOURNAMENTS = [
@@ -20,7 +20,7 @@ IGNORE_TOURNAMENTS = [
 
 
 def runMultiRegion(model, region, stop_date):
-    regions = ['NA', 'EU', 'KR', 'CN', 'INT'] if region == 'ALL' else region
+    regions = ['NA', 'EU', 'KR', 'CN', 'INT'] if region == 'ALL' else [region]
     teamfiles = []
     start_year = 2010
     for region in regions:

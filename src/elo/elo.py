@@ -43,7 +43,7 @@ class EloRatingSystem(object):
     def loadGames(self, results, playoffs=False):
         for result in results:
             t1, t2, t1s, t2s, match_round = result
-            if not t1s:
+            if not t1s or not match_round:
                 continue
             try:
                 self._getTeam(t1)
