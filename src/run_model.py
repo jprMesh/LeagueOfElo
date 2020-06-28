@@ -1,3 +1,5 @@
+#!/usr/local/bin/python3
+
 from elo import elo
 from get_league_data import Leaguepedia_DB
 from typing import Dict
@@ -16,7 +18,8 @@ TEAMFILES = {
 IGNORE_TOURNAMENTS = [
     'Rift Rivals',
     'EU Face-Off',
-    'Mid-Season Showdown']
+    'Mid-Season Showdown',
+    'IWCT']
 
 
 def runMultiRegion(model, region, stop_date):

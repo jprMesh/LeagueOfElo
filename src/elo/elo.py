@@ -171,11 +171,16 @@ class EloRatingSystem(object):
 
     def _exportData(self):
         data = {}
+        inactive = {}
         colors = {}
-        for _, team in sorted(self.teams.items(), key=lambda item: item[1].getRating(), reverse=True):
+        for _, team in sorted(self.teams.items(), key=lambda item: item[1].getRating()):
             abbrev = team.abbrev
             colors[abbrev] = team.color
-            data[abbrev] = team.rating_history
+            if team.inactive:
+                inactive[abbrev] = team.rating_history
+            else:
+                data[abbrev] = team.rating_history
+        data.update(inactive)
         return data, colors, self.seasons
 
 
@@ -328,24 +333,29 @@ class EloPlotter(object):
         split_lens = [len(split_len) for split_len in data[list(data.keys())[0]]]
         split_bounds = np.cumsum(split_lens) - 1
         fig = go.Figure(layout_xaxis_showticklabels=False,
-                        layout_yaxis_title="Elo Rating")
+                        layout_yaxis_title='Elo Rating',
+                        layout_legend_traceorder='grouped+reversed')
 
-        for team in data:
-            end_rating = data[team][-1][-1]
-            for split, split_data in enumerate(data[team]):
+        first_inactive = True
+        for team, rating_hist in data.items():
+            end_rating = rating_hist[-1][-1]
+            for split, split_data in enumerate(rating_hist):
                 if len(set(split_data)) == 1:
-                    data[team][split] = [None] * len(split_data)
-            team_data = sum(data[team], [])
+                    rating_hist[split] = [None] * len(split_data)
+            team_data = sum(rating_hist, []) # flatten array
             x_series = list(range(0, len(team_data)))
             team_inactive = team_data[-1] == None
             fig.add_trace(go.Scatter(
                 x=x_series,
                 y=team_data,
-                name=f'{team}: {int(end_rating)}',
+                name=f'{team}: {int(end_rating)}' if not team_inactive else 'Inactive',
                 text=team,
                 hoverinfo='text+x+y',
                 line={'color':colors[team]},
-                legendgroup='Inactive' if team_inactive else 'Active'))
+                showlegend=False if (team_inactive and not first_inactive) else True,
+                legendgroup='inactive' if team_inactive else 'active'))
+            if team_inactive:
+                first_inactive = False
 
         # Draw split boundaries
         for idx, split_bound in enumerate(split_bounds):
