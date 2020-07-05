@@ -23,7 +23,7 @@ IGNORE_TOURNAMENTS = [
 
 
 def runMultiRegion(model, region, stop_date):
-    regions = ['NA', 'EU', 'KR', 'CN', 'INT'] if region == 'ALL' else [region]
+    regions = ['NA', 'EU', 'KR', 'CN', 'INT'] if region == 'INT' else [region]
     teamfiles = []
     start_year = 2010
     for region in regions:
@@ -55,7 +55,7 @@ def runMultiRegion(model, region, stop_date):
 
 def parseArgs() -> Dict:
     parser = argparse.ArgumentParser()
-    parser.add_argument('region', choices=['NA', 'EU', 'KR', 'CN', 'ALL'], default='ALL',
+    parser.add_argument('region', choices=['NA', 'EU', 'KR', 'CN', 'INT', 'ALL'], default='INT',
                         help='Region to run the model on.', nargs='?')
     parser.add_argument('stop_date', nargs='?', type=str, default=strftime('%Y-%m-%d'),
                         help='Date to stop processing data in YYYY-MM-DD format. Defaults to current day.')
@@ -67,4 +67,10 @@ def parseArgs() -> Dict:
 
 if __name__ == '__main__':
     args = parseArgs()
-    runMultiRegion(**args)
+    if args['region'] == 'ALL':
+        for region in TEAMFILES:
+            print(f'Running {region}')
+            args['region'] = region
+            runMultiRegion(**args)
+    else:
+        runMultiRegion(**args)
