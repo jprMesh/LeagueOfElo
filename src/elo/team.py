@@ -1,7 +1,11 @@
 import numpy as np
+from collections import namedtuple
 
 
 class Team(object):
+
+    info = namedtuple('TeamInfo', ['id', 'abbrev', 'name', 'color'], defaults=['#868686'])
+
     """A Professional League of Legends Team"""
     def __init__(self, team_id, abbrev, name, color="#868686", starting_rating=1500):
         self.team_id = team_id

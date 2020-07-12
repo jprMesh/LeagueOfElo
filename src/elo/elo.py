@@ -1,16 +1,15 @@
 from .team import *
+from statistics import mean
 import re
+
 
 class EloRatingSystem(object):
     """Elo Rating System for a single league"""
-    def __init__(self, league, teamfiles, K=20):
+    def __init__(self, league, K=20):
         self.league_name = league
         self.K = K
+        self.teams_by_region = {}
         self.teams = {}
-        for teamfile in teamfiles:
-            with open(teamfile, 'r') as teams:
-                for team in teams:
-                    self._addTeam(team)
         self.alignment = [0]
         self.season_boundary = []
         self.brier_scores = []
@@ -40,16 +39,22 @@ class EloRatingSystem(object):
             table_str += row[1]
         return table_str
 
+    def loadTeams(self, teamfile, region):
+        self.teams_by_region[region] = []
+        with open(teamfile, 'r') as teams:
+            for team in teams:
+                self._addTeam(team, region)
+
     def loadGames(self, results, playoffs=False):
         for result in results:
             t1, t2, t1s, t2s, match_round = result
             if not t1s or not match_round:
                 continue
             try:
-                self._getTeam(t1)
+                self._getTeam(team_name=t1)
             except ValueError:
                 try:
-                    self._getTeam(t2)
+                    self._getTeam(team_name=t2)
                 except ValueError:
                     continue
             tie = (int(t1s) == int(t2s))
@@ -67,36 +72,43 @@ class EloRatingSystem(object):
         except:
             self.seasons.append(season_name)
         self._align()
-        for _, team in self.teams.items():
-            if not rating_reset:
-                team.team_rating = team.getRating()*0.75 + 1500*0.25
-            team.rating_history.append([team.getRating()])
+        for region, teams in self.teams_by_region.items():
+            regional_avg = self._getRegionalAverage(region)
+            for t in teams:
+                team = self._getTeam(team_id=t)
+                if not rating_reset:
+                    team.team_rating = team.getRating()*0.75 + regional_avg*0.25
+                team.rating_history.append([team.getRating()])
 
     def predict(self, team1, team2):
-        win_prob = self._getWinProb(self._getTeam(team1), self._getTeam(team2))
+        win_prob = self._getWinProb(self._getTeam(team_name=team1), self._getTeam(team_name=team2))
         if win_prob < 0.5:
             team1, team2 = team2, team1
             win_prob = 1 - win_prob
         print(f"{team1} {int(win_prob*100)}% over {team2}")
 
-    def printStats(self):
+    def printStats(self, no_open):
         print(self._getBrier())
         print(self._getUpDown())
+        for region in self.teams_by_region:
+            avg_rating = self._getRegionalAverage(region)
+            print(f'{region} Average Rating: {avg_rating:.2f}')
         #print(self.getActiveTeamsRatings())
         self._align()
         data, colors, seasons = self._exportData()
         #EloPlotter.matplotlib_plot(self.league_name, data, colors)
-        EloPlotter.plotly_plot(self.league_name, data, colors, seasons)
+        EloPlotter.plotly_plot(self.league_name, data, colors, seasons, no_open)
 
 ## Private
-    def _addTeam(self, team):
-        team_info = list(map(str.strip, team.split(',')))
+    def _addTeam(self, team, region):
+        team_info = Team.info(*list(map(str.strip, team.split(','))))
         try:
-            existing_team = self._getTeam(team_id=team_info[0])
+            existing_team = self._getTeam(team_id=team_info.id)
         except ValueError:
-            self.teams[team_info[2]] = Team(*team_info)
+            self.teams_by_region[region].append(team_info.id)
+            self.teams[team_info.id] = Team(*team_info)
         else:
-            existing_team.names.extend([team_info[2], team_info[1]])
+            existing_team.names.extend([team_info.name, team_info.abbrev])
 
     def _getTeam(self, team_name=None, team_id=None, default=None):
         team = self.teams.get(team_name)
@@ -135,8 +147,8 @@ class EloRatingSystem(object):
         Adjust the model's understanding of two teams based on the outcome of a
         match between the two teams.
         """
-        winning_team = self._getTeam(winner, default=DummyTeam(1400))
-        losing_team = self._getTeam(loser, default=DummyTeam(1400))
+        winning_team = self._getTeam(team_name=winner, default=DummyTeam(1400))
+        losing_team = self._getTeam(team_name=loser, default=DummyTeam(1400))
         if tie:  # In a tie, the team with the lower rating is considered the winner
             if winning_team.getRating() > losing_team.getRating():
                 winning_team, losing_team = losing_team, winning_team
@@ -158,6 +170,10 @@ class EloRatingSystem(object):
                 team.inactive = False
             game_diff = max_games - len(team.rating_history[-1])
             team.rating_history[-1].extend([team.getRating()] * game_diff)
+
+    def _getRegionalAverage(self, region):
+        ratings = [self._getTeam(t).getRating() for t in self.teams_by_region[region]]
+        return mean(ratings)
 
     def _getBrier(self):
         brier = sum(self.brier_scores)/len(self.brier_scores)
@@ -326,7 +342,7 @@ class EloPlotter(object):
         plt.show()
 
     @staticmethod
-    def plotly_plot(league, data, colors, seasons):
+    def plotly_plot(league, data, colors, seasons, no_open):
         import plotly.graph_objects as go
         import numpy as np
 
@@ -383,4 +399,5 @@ class EloPlotter(object):
 
         with open(f'../docs/{league}_elo.html', 'w') as div_file:
             div_file.write(fig.to_html(full_html=False, include_plotlyjs='cdn'))
-        fig.show()
+        if not no_open:
+            fig.show()

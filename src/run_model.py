@@ -22,15 +22,14 @@ IGNORE_TOURNAMENTS = [
     'IWCT']
 
 
-def runMultiRegion(model, region, stop_date):
+def runMultiRegion(model, region, stop_date, no_open):
     regions = ['NA', 'EU', 'KR', 'CN', 'INT'] if region == 'INT' else [region]
-    teamfiles = []
     start_year = 2010
+    league = model('_'.join(regions), K=30)
     for region in regions:
         teamfile, region_start_year = TEAMFILES.get(region)
-        teamfiles.append(teamfile)
         start_year = max(start_year, region_start_year)
-    league = model('_'.join(regions), teamfiles, K=30)
+        league.loadTeams(teamfile, region)
     lpdb = Leaguepedia_DB()
     season_list = lpdb.getTournaments(regions, start_year, stop_date)
     season_list = filter(lambda x: all([t not in x for t in IGNORE_TOURNAMENTS]), season_list)
@@ -51,7 +50,7 @@ def runMultiRegion(model, region, stop_date):
         results = lpdb.getSeasonResults(season)
         #print(season, len(results))
         league.loadGames(results, 'Playoffs' in season)
-    league.printStats()
+    league.printStats(no_open)
 
 def parseArgs() -> Dict:
     parser = argparse.ArgumentParser()
@@ -62,6 +61,8 @@ def parseArgs() -> Dict:
     parser.add_argument('--player_model', '-p', dest='model', action='store_const',
                         const=elo.PlayerEloRatingSystem, default=elo.EloRatingSystem,
                         help='Use the player-based elo model rather than the team-based rating system')
+    parser.add_argument('--no_open', '-n', action='store_true',
+                        help='Don\'t automatically open the graph')
     return vars(parser.parse_args())
 
 

@@ -11,7 +11,7 @@ Elo is a rating system developed to rate chess players, but it's a good system f
 
 The implementation of this model is based on [FiveThirtyEight's NFL team elo rating system model](https://fivethirtyeight.com/methodology/how-our-nfl-predictions-work/). There are two key points to note here:
 1. For each match, the model generates a prediction and the teams gain or lose points based on how correct the model was. Because predicting match outcomes is integral to the model, it tunes itself over time to predict matches as optimally as possible.
-2. Teams all start out at a 1500 rating. In between seasons, teams ratings regress 25% toward the mean (1500) to adjust for any changes in roster, meta, coaching, etc. It also tells the model that there is more uncertainty at the beginning of each new season.
+2. Teams all start out at a 1500 rating. In between seasons, teams ratings regress 25% toward the regional mean to adjust for any changes in roster, meta, coaching, etc. It also tells the model that there is more uncertainty at the beginning of each new season.
 
 The model makes predictions about how likely a team is to take victory over another team based on the following formula that takes into account Team 1's rating $$T_1$$ and Team 2's rating $$T_2$$.
 
@@ -77,13 +77,9 @@ International competitions have an interesting way of modifying a whole region's
 
 ## LCK
 
-Of note here is that the LCK regular season uses Bo3s rather than Bo1s.
-
 {% include_relative KR_elo.html %}
 
 ## LPL
-
-The LPL also uses Bo3s in the regular season.
 
 {% include_relative CN_elo.html %}
 
