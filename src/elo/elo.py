@@ -57,10 +57,7 @@ class EloRatingSystem(object):
                     self._getTeam(team_name=t2)
                 except ValueError:
                     continue
-            tie = (int(t1s) == int(t2s))
-            winloss_args = ((t1, t2, int(t1s), int(t2s), tie) if
-                            int(t1s) > int(t2s) else
-                            (t2, t1, int(t2s), int(t1s), tie))
+            winloss_args = (t1, t2, int(t1s), int(t2s))
             self._adjustRating(*winloss_args)
 
     def loadRosters(self, rosters):
@@ -87,17 +84,18 @@ class EloRatingSystem(object):
             win_prob = 1 - win_prob
         print(f"{team1} {int(win_prob*100)}% over {team2}")
 
-    def printStats(self, no_open):
+    def printStats(self):
         print(self._getBrier())
         print(self._getUpDown())
         for region in self.teams_by_region:
             avg_rating = self._getRegionalAverage(region)
             print(f'{region} Average Rating: {avg_rating:.2f}')
-        #print(self.getActiveTeamsRatings())
+
+    def genPlots(self, docs_path, no_open):
         self._align()
         data, colors, seasons = self._exportData()
         #EloPlotter.matplotlib_plot(self.league_name, data, colors)
-        EloPlotter.plotly_plot(self.league_name, data, colors, seasons, no_open)
+        EloPlotter.plotly_plot(self.league_name, data, colors, seasons, docs_path, no_open)
 
 ## Private
     def _addTeam(self, team, region):
@@ -139,25 +137,32 @@ class EloRatingSystem(object):
         Get a modifier value to scale rating adjustments with respect to match score.
         """
         w, l = winner_score, loser_score
-        multiplier = ((w-l)*w/(w+l))**0.7
-        return multiplier
+        if w == l:
+            return 0.25
+        return ((w-l)*w/(w+l))**0.7
 
-    def _adjustRating(self, winner, loser, winner_score, loser_score, tie):
+    def _adjustRating(self, t1, t2, t1_score, t2_score):
         """
         Adjust the model's understanding of two teams based on the outcome of a
         match between the two teams.
         """
-        winning_team = self._getTeam(team_name=winner, default=DummyTeam(1400))
-        losing_team = self._getTeam(team_name=loser, default=DummyTeam(1400))
-        if tie:  # In a tie, the team with the lower rating is considered the winner
-            if winning_team.getRating() > losing_team.getRating():
-                winning_team, losing_team = losing_team, winning_team
-        forecast_delta = 1 - self._getWinProb(winning_team, losing_team)
-        match_score_mult = self._getMatchScoreMultiplier(winner_score, loser_score)
-        if tie:
-            match_score_mult = 0.25
-        winning_team.updateRating(self.K * forecast_delta * match_score_mult)
-        losing_team.updateRating(self.K * -forecast_delta * match_score_mult)
+        t1 = self._getTeam(team_name=t1, default=DummyTeam(1400))
+        t2 = self._getTeam(team_name=t2, default=DummyTeam(1400))
+
+        # In a tie, the lower ranked team is considered the winner.
+        if t1_score > t2_score or (t1_score == t2_score and t1.getRating() < t2.getRating()):
+            win_team, win_score = t1, t1_score
+            lose_team, lose_score = t2, t2_score
+        else:
+            win_team, win_score = t2, t2_score
+            lose_team, lose_score = t1, t1_score
+
+        forecast_delta = 1 - self._getWinProb(win_team, lose_team)
+        match_score_mult = self._getMatchScoreMultiplier(win_score, lose_score)
+        win_team.updateRating(self.K * forecast_delta * match_score_mult)
+        lose_team.updateRating(self.K * -forecast_delta * match_score_mult)
+
+        # Update internal prediction records
         self.up_down.append(forecast_delta < .5)
         self.brier_scores.append(forecast_delta**2)
 
@@ -342,7 +347,7 @@ class EloPlotter(object):
         plt.show()
 
     @staticmethod
-    def plotly_plot(league, data, colors, seasons, no_open):
+    def plotly_plot(league, data, colors, seasons, docs_path, no_open):
         import plotly.graph_objects as go
         import numpy as np
 
@@ -397,7 +402,7 @@ class EloPlotter(object):
                 y=0.04*(idx%2),
                 text=seasons[idx])
 
-        with open(f'../docs/{league}_elo.html', 'w') as div_file:
+        with open(docs_path / f'{league}_elo.html', 'w') as div_file:
             div_file.write(fig.to_html(full_html=False, include_plotlyjs='cdn'))
         if not no_open:
             fig.show()

@@ -1,6 +1,6 @@
 # League of Elo
 
-Stats at [elo.jprmesh.xyz](https://jprmesh.github.io/LeagueOfElo)
+Stats at [elo.jprmesh.xyz](https://elo.jprmesh.xyz/)
 
 Elo-based prediction and rating system for Professional League of Legends Teams
 
@@ -8,9 +8,9 @@ Elo-based prediction and rating system for Professional League of Legends Teams
 
 `pip3 install mwclient numpy matplotlib plotly`
 
-`cd src`
+`./src/run_model.py <NA|EU|KR|CN|INT|ALL>`
 
-`python3 run_model.py <team|player> <lcs|lck|lec|lpl>`
+> Use `-h` to see more options.
 
 ## Jekyll Site Local Deployment
 

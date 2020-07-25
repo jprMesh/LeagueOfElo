@@ -4,16 +4,21 @@ from elo import elo
 from get_league_data import Leaguepedia_DB
 from typing import Dict
 from time import strftime
+from pathlib import Path
 import argparse
 import re
 
 
+SRC_PATH = Path(__file__).resolve().parent
+CFG_PATH = Path(SRC_PATH / '..' / 'cfg')
+DOCS_PATH = Path(SRC_PATH / '..' / 'docs')
+
 TEAMFILES = {
-    'NA': ('../cfg/LCS_teams.csv', 2015),
-    'EU': ('../cfg/LEC_teams.csv', 2015),
-    'KR': ('../cfg/LCK_teams.csv', 2015),
-    'CN': ('../cfg/LPL_teams.csv', 2015),
-    'INT': ('../cfg/INT_teams.csv', 2015),
+    'NA': ('LCS_teams.csv', 2015),
+    'EU': ('LEC_teams.csv', 2015),
+    'KR': ('LCK_teams.csv', 2015),
+    'CN': ('LPL_teams.csv', 2015),
+    'INT': ('INT_teams.csv', 2015),
 }
 IGNORE_TOURNAMENTS = [
     'Rift Rivals',
@@ -29,7 +34,7 @@ def runMultiRegion(model, region, stop_date, no_open):
     for region in regions:
         teamfile, region_start_year = TEAMFILES.get(region)
         start_year = max(start_year, region_start_year)
-        league.loadTeams(teamfile, region)
+        league.loadTeams(CFG_PATH / teamfile, region)
     lpdb = Leaguepedia_DB()
     season_list = lpdb.getTournaments(regions, start_year, stop_date)
     season_list = filter(lambda x: all([t not in x for t in IGNORE_TOURNAMENTS]), season_list)
@@ -50,7 +55,8 @@ def runMultiRegion(model, region, stop_date, no_open):
         results = lpdb.getSeasonResults(season)
         #print(season, len(results))
         league.loadGames(results, 'Playoffs' in season)
-    league.printStats(no_open)
+    league.printStats()
+    league.genPlots(DOCS_PATH, no_open)
 
 def parseArgs() -> Dict:
     parser = argparse.ArgumentParser()
