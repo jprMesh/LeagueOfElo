@@ -73,7 +73,7 @@ class EloRatingSystem(object):
             regional_avg = self._getRegionalAverage(region)
             for t in teams:
                 team = self._getTeam(team_id=t)
-                if not rating_reset:
+                if rating_reset:
                     team.team_rating = team.getRating()*0.75 + regional_avg*0.25
                 team.rating_history.append([team.getRating()])
 

@@ -7,11 +7,13 @@ from time import strftime
 from pathlib import Path
 import argparse
 import re
+import pickle
 
 
 SRC_PATH = Path(__file__).resolve().parent
 CFG_PATH = Path(SRC_PATH / '..' / 'cfg')
 DOCS_PATH = Path(SRC_PATH / '..' / 'docs')
+CACHE_PATH = Path(SRC_PATH / '..' / 'cache')
 
 TEAMFILES = {
     'NA': ('LCS_teams.csv', 2015),
@@ -27,6 +29,35 @@ IGNORE_TOURNAMENTS = [
     'IWCT']
 
 
+class DataCache():
+    def __init__(self, regen=False):
+        self.lpdb = None
+        self.force_lpdb = regen
+
+    def lpdb_connect(self):
+        self.lpdb = Leaguepedia_DB()
+
+    def getTournaments(self, regions, start_year, stop_date):
+        if not self.lpdb:
+            self.lpdb_connect()
+        season_list = self.lpdb.getTournaments(regions, start_year, stop_date)
+        season_list = list(filter(lambda x: all([t not in x for t in IGNORE_TOURNAMENTS]), season_list))
+        return season_list
+
+    def getMatchResults(self, season, force_fetch=False):
+        results_file = Path(CACHE_PATH / 'results' / f'{season}.p')
+        if results_file.is_file() and not force_fetch:
+            results = pickle.load(open(results_file, 'rb'))
+            #print(f'Using cached: {season}')
+        else:
+            print(f'Fetching: {season}')
+            if not self.lpdb:
+                self.lpdb_connect()
+            results = self.lpdb.getSeasonResults(season)
+            pickle.dump(results, open(results_file, 'wb'))
+        return results
+
+
 def runMultiRegion(model, region, stop_date, no_open):
     regions = ['NA', 'EU', 'KR', 'CN', 'INT'] if region == 'INT' else [region]
     start_year = 2010
@@ -35,24 +66,36 @@ def runMultiRegion(model, region, stop_date, no_open):
         teamfile, region_start_year = TEAMFILES.get(region)
         start_year = max(start_year, region_start_year)
         league.loadTeams(CFG_PATH / teamfile, region)
-    lpdb = Leaguepedia_DB()
-    season_list = lpdb.getTournaments(regions, start_year, stop_date)
-    season_list = filter(lambda x: all([t not in x for t in IGNORE_TOURNAMENTS]), season_list)
 
-    year = None
+    cache = DataCache()
+    season_list = cache.getTournaments(regions, start_year, stop_date)
+
     split = None
+    split_transmissions = []
     for season in season_list:
+        # Declare new season when split transitions between any of the following
         new_split = re.search('(Spring|Summer|MSI|Worlds|Mid-Season Cup)', season)
         if new_split and new_split[0] != split:
             split = new_split[0]
+            split_transmissions.append(season)
+
+    year = None
+    split = None
+    force_fetch = False
+    for season in season_list:
+        # Declare new season when split transitions between any of the following
+        if season in split_transmissions:
             year = re.search('\d\d\d\d', season)[0]
+            split = re.search('(Spring|Summer|MSI|Worlds|Mid-Season Cup)', season)[0]
             print(f'{year} {split}')
             if split in ['Spring', 'Summer']:
-                league.newSeasonReset(f'{year} {split}')
+                league.newSeasonReset(f'{year} {split}', rating_reset=True)
             else:
-                league.newSeasonReset(split, rating_reset=True)
-        league.loadRosters(lpdb.getSeasonRosters(season))
-        results = lpdb.getSeasonResults(season)
+                league.newSeasonReset(split, rating_reset=False)
+            if season == split_transmissions[-1]:
+                force_fetch = True
+        #league.loadRosters(lpdb.getSeasonRosters(season))
+        results = cache.getMatchResults(season, force_fetch=force_fetch)
         #print(season, len(results))
         league.loadGames(results, 'Playoffs' in season)
     league.printStats()
