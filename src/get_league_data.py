@@ -30,7 +30,7 @@ class Leaguepedia_DB(object):
             'CN': 'China',
             'INT': 'International'}
         region_query = ' OR '.join(map('T.region="{}"'.format, map(regions.get, region_list)))
-        where = f'({region_query}) AND T.TournamentLevel="Primary" AND T.IsOfficial="1" AND T.IsQualifier="0"'
+        where = f'({region_query}) AND T.TournamentLevel="Primary" AND T.IsOfficial="1"'
         if earliest:
             where += f' AND T.DateStart>"{earliest}"'
         if latest:

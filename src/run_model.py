@@ -23,6 +23,8 @@ TEAMFILES = {
     'INT': ('INT_teams.csv', 2015),
 }
 IGNORE_TOURNAMENTS = [
+    'Promotion',
+    'Play-In',
     'Rift Rivals',
     'EU Face-Off',
     'Mid-Season Showdown',

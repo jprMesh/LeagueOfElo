@@ -87,9 +87,9 @@ class EloRatingSystem(object):
     def printStats(self):
         print(self._getBrier())
         print(self._getUpDown())
-        for region in self.teams_by_region:
-            avg_rating = self._getRegionalAverage(region)
-            print(f'{region} Average Rating: {avg_rating:.2f}')
+        #for region in self.teams_by_region:
+        #    avg_rating = self._getRegionalAverage(region)
+        #    print(f'{region} Average Rating: {avg_rating:.2f}')
 
     def genPlots(self, docs_path, no_open):
         self._align()
