@@ -43,7 +43,16 @@ class EloRatingSystem(object):
         self.teams_by_region[region] = []
         with open(teamfile, 'r') as teams:
             for team in teams:
-                self._addTeam(team, region)
+                team_info = Team.info(*list(map(str.strip, team.split(','))))
+                self._addTeam(team_info, region)
+
+    def loadTeamsDict(self, teams):
+        region = 'Blaseball'
+        self.teams_by_region[region] = []
+        for team in teams:
+            team_info = Team.info(team['id'], team['shorthand'], team['fullName'], team['mainColor'])
+            self._addTeam(team_info, region)
+        print(self.teams)
 
     def loadGames(self, results, playoffs=False):
         for result in results:
@@ -98,8 +107,7 @@ class EloRatingSystem(object):
         EloPlotter.plotly_plot(self.league_name, data, colors, seasons, docs_path, no_open)
 
 ## Private
-    def _addTeam(self, team, region):
-        team_info = Team.info(*list(map(str.strip, team.split(','))))
+    def _addTeam(self, team_info, region='Default'):
         try:
             existing_team = self._getTeam(team_id=team_info.id)
         except ValueError:
