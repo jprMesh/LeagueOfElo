@@ -50,23 +50,28 @@ class EloRatingSystem(object):
         region = 'Blaseball'
         self.teams_by_region[region] = []
         for team in teams:
-            team_info = Team.info(team['id'], team['shorthand'], team['fullName'], team['mainColor'])
+            team_info = Team.info(team['id'], team['nickname'], team['fullName'], team['mainColor'])
             self._addTeam(team_info, region)
-        print(self.teams)
 
-    def loadGames(self, results, playoffs=False):
+    def loadGames(self, results, playoffs=False, using_ids=False):
         for result in results:
             t1, t2, t1s, t2s, match_round = result
             if not t1s or not match_round:
                 continue
             try:
-                self._getTeam(team_name=t1)
+                if using_ids:
+                    self._getTeam(team_id=t1)
+                else:
+                    self._getTeam(team_name=t1)
             except ValueError:
                 try:
-                    self._getTeam(team_name=t2)
+                    if using_ids:
+                        self._getTeam(team_id=t2)
+                    else:
+                        self._getTeam(team_name=t2)
                 except ValueError:
                     continue
-            winloss_args = (t1, t2, int(t1s), int(t2s))
+            winloss_args = (t1, t2, int(t1s), int(t2s), using_ids)
             self._adjustRating(*winloss_args)
 
     def loadRosters(self, rosters):
@@ -149,13 +154,17 @@ class EloRatingSystem(object):
             return 0.25
         return ((w-l)*w/(w+l))**0.7
 
-    def _adjustRating(self, t1, t2, t1_score, t2_score):
+    def _adjustRating(self, t1, t2, t1_score, t2_score, using_ids=False):
         """
         Adjust the model's understanding of two teams based on the outcome of a
         match between the two teams.
         """
-        t1 = self._getTeam(team_name=t1, default=DummyTeam(1400))
-        t2 = self._getTeam(team_name=t2, default=DummyTeam(1400))
+        if using_ids:
+            t1 = self._getTeam(team_id=t1, default=DummyTeam(1400))
+            t2 = self._getTeam(team_id=t2, default=DummyTeam(1400))
+        else:
+            t1 = self._getTeam(team_name=t1, default=DummyTeam(1400))
+            t2 = self._getTeam(team_name=t2, default=DummyTeam(1400))
 
         # In a tie, the lower ranked team is considered the winner.
         if t1_score > t2_score or (t1_score == t2_score and t1.getRating() < t2.getRating()):
@@ -166,7 +175,8 @@ class EloRatingSystem(object):
             lose_team, lose_score = t1, t1_score
 
         forecast_delta = 1 - self._getWinProb(win_team, lose_team)
-        match_score_mult = self._getMatchScoreMultiplier(win_score, lose_score)
+        #match_score_mult = self._getMatchScoreMultiplier(win_score, lose_score)
+        match_score_mult = 1
         win_team.updateRating(self.K * forecast_delta * match_score_mult)
         lose_team.updateRating(self.K * -forecast_delta * match_score_mult)
 

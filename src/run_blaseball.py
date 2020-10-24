@@ -2,30 +2,24 @@
 
 from elo import elo
 from blaseball_api import Blaseball_API
+from pathlib import Path
 
 
-def runBlaseballModel():
+def runBlaseballModel(current_season):
     bbapi = Blaseball_API()
     teams = bbapi.getTeams()
-    bb_league = elo.EloRatingSystem('Blaseball', K=30)
+    bb_league = elo.EloRatingSystem('Blaseball', K=7)
     bb_league.loadTeamsDict(teams)
 
-    bb_league.getActiveTeamsRatings();return
-    season_list = bbapi.getSeasons(regions, start_year, stop_date)
-
-    for season in season_list:
-        split = new_split[0]
-        split_transmissions.append(season)
-
-    for season in season_list:
-        print(season)
-        bb_league.newSeasonReset(season, rating_reset=True)
-        results = bbapi.getMatchResults(season)
-        print(season, len(results))
-        bb_league.loadGames(results)
+    for season in range(current_season):
+        print(f'Running Season {season+1}')
+        bb_league.newSeasonReset(f'Season {season+1}', rating_reset=True)
+        results = bbapi.getMatchResults(season, force_fetch=(season == current_season))
+        print(f'  {len(results)} matches')
+        bb_league.loadGames(results, using_ids=True)
     bb_league.printStats()
-    bb_league.genPlots('.', no_open=False)
+    bb_league.genPlots(Path('.'), no_open=False)
 
 
 if __name__ == '__main__':
-    runBlaseballModel()
+    runBlaseballModel(11)
