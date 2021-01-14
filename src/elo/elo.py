@@ -70,6 +70,7 @@ class EloRatingSystem(object):
                     else:
                         self._getTeam(team_name=t2)
                 except ValueError:
+                    print(f"Both teams unknown. Ignoring match. {t1}, {t2}")
                     continue
             winloss_args = (t1, t2, int(t1s), int(t2s), using_ids)
             self._adjustRating(*winloss_args)

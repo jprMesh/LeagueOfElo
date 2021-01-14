@@ -9,10 +9,12 @@
 203,    KSV,    KSV eSports
 203,    SSG,    Samsung Galaxy
 204,    HLE,    Hanwha Life Esports,#EE7529
-205,    AF,     Afreeca Freecs,     #3381FE
+205,    AF,     Afreeca Freecs,     #34ACEE
 205,    RANC,   Rebels Anarchy
 205,    ANC,    Anarchy
+206,    DWG,    DWG KIA,            #5A989D
 206,    DWG,    DAMWON Gaming,      #5A989D
+207,    LSB,    Liiv SANDBOX,       #F8C32E
 207,    SB,     SANDBOX Gaming,     #7E0121
 208,    GRF,    Griffin,            #D30C24
 209,    SP,     SeolHaeOne Prince,  #D3454A
@@ -30,4 +32,6 @@
 215,    E8W,    Ever8 Winners
 216,    CJ,     CJ Entus
 217,    SBENU,  SBENU Sonicboom
+218,    NS,     Nongshim RedForce,  #D81E2B
 218,    TD,     Team Dynamics,      #2C73BD
+219,    FB,     Fredit BRION,       #074926
