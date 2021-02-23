@@ -73,29 +73,32 @@ def runMultiRegion(model, region, stop_date, no_open):
     season_list = cache.getTournaments(regions, start_year, stop_date)
 
     split = None
-    split_transmissions = []
+    split_transitions = []
+    print(season_list)
     for season in season_list:
         # Declare new season when split transitions between any of the following
-        new_split = re.search('(Spring|Summer|MSI|Worlds|Mid-Season Cup)', season)
+        new_split = re.search('(Spring|Summer|MSI|Worlds|Mid-Season Cup|Lock In)', season)
         if new_split and new_split[0] != split:
             split = new_split[0]
-            split_transmissions.append(season)
+            split_transitions.append(season)
 
     year = None
+    last_year = None
     split = None
     force_fetch = False
     for season in season_list:
         # Declare new season when split transitions between any of the following
-        if season in split_transmissions:
+        if season in split_transitions:
             year = re.search('\d\d\d\d', season)[0]
-            split = re.search('(Spring|Summer|MSI|Worlds|Mid-Season Cup)', season)[0]
+            split = re.search('(Spring|Summer|MSI|Worlds|Mid-Season Cup|Lock In)', season)[0]
             print(f'{year} {split}')
-            if split in ['Spring', 'Summer']:
+            if year != last_year or split == 'Summer':
                 league.newSeasonReset(f'{year} {split}', rating_reset=True)
             else:
                 league.newSeasonReset(split, rating_reset=False)
-            if season == split_transmissions[-1]:
+            if season == split_transitions[-1]:
                 force_fetch = True
+            last_year = year
         #league.loadRosters(lpdb.getSeasonRosters(season))
         results = cache.getMatchResults(season, force_fetch=force_fetch)
         #print(season, len(results))

@@ -39,7 +39,7 @@ class Leaguepedia_DB(object):
             'tables': 'Tournaments=T',
             'fields': 'T.Name',
             'where': where,
-            'order_by': 'T.DateStart ASC'}
+            'order_by': 'T.Date ASC'}
 
         rows = self._query(query_dict)
         return [row['Name'] for row in rows]
@@ -82,7 +82,7 @@ class Leaguepedia_DB(object):
                 limit = 'max',
                 tables = "MatchScheduleGame=MSG,MatchSchedule=MS",
                 fields = "MS.Team1,MS.Team2,MS.Team1Score,MS.Team2Score,MSG.GameID_Wiki",
-                where = f'MS.ShownName="{season}"', 
+                where = f'MS.ShownName="{season}"',
                 join_on = "MSG.UniqueMatch=MS.UniqueMatch",
                 order_by = "MS.DateTime_UTC ASC")
 
@@ -95,7 +95,7 @@ class Leaguepedia_DB(object):
                 limit = 'max',
                 tables = "MatchScheduleGame=MSG,ScoreboardGames=SG",
                 fields = "MSG.GameID_Wiki, SG.ScoreboardID_Wiki, SG.Team1Names, SG.Team2Names",
-                where = f'SG.Tournament="{season}"', 
+                where = f'SG.Tournament="{season}"',
                 join_on = "MSG.GameID_Wiki=SG.ScoreboardID_Wiki",
                 order_by = "SG.DateTime_UTC ASC")
 
