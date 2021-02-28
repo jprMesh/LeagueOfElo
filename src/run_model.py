@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/env python3
 
 from elo import elo
 from get_league_data import Leaguepedia_DB
