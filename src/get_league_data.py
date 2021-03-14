@@ -1,5 +1,5 @@
 import mwclient
-from leaguepedia_login import login, key
+from .leaguepedia_login import login, key
 
 
 class Leaguepedia_DB(object):
