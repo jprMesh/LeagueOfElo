@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from elo import league, rating_system
-from get_league_data import Leaguepedia_DB
+from league_of_elo.elo import league, rating_system
+from league_of_elo.get_league_data import Leaguepedia_DB
 from typing import Dict
 from time import strftime
 from pathlib import Path
@@ -11,7 +11,7 @@ import pickle
 
 
 SRC_PATH = Path(__file__).resolve().parent
-CFG_PATH = Path(SRC_PATH / '..' / 'cfg')
+CFG_PATH = Path(SRC_PATH / 'cfg')
 DOCS_PATH = Path(SRC_PATH / '..' / 'docs')
 CACHE_PATH = Path(SRC_PATH / '..' / 'cache')
 

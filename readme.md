@@ -8,7 +8,7 @@ Elo-based prediction and rating system for Professional League of Legends Teams
 
 `pip3 install mwclient numpy matplotlib plotly`
 
-`./src/run_model.py <NA|EU|KR|CN|INT|ALL>`
+`python3 -m league_of_elo.run_lol [NA|EU|KR|CN|INT|ALL]`
 
 > Use `-h` to see more options.
 
