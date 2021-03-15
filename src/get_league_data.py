@@ -48,7 +48,7 @@ class Leaguepedia_DB(object):
         r = self.lpdb.api('cargoquery',
                 limit = 'max',
                 tables = 'MatchSchedule=MS, Tournaments=T',
-                fields = 'MS.Team1,MS.Team2,MS.Team1Score,MS.Team2Score,MS.Tab',
+                fields = 'MS.Team1,MS.Team2,MS.Team1Score,MS.Team2Score,MS.DateTime_UTC,MS.Tab',
                 join_on = 'T.OverviewPage=MS.OverviewPage',
                 where = f'T.Name="{season}"',
                 order_by = 'MS.DateTime_UTC ASC')
@@ -57,6 +57,7 @@ class Leaguepedia_DB(object):
                     m['title']['Team2'],
                     m['title']['Team1Score'],
                     m['title']['Team2Score'],
+                    m['title']['DateTime UTC'],
                     m['title']['Tab'])
                    for m in r['cargoquery']]
         return matches
