@@ -37,12 +37,12 @@ class Leaguepedia_DB(object):
             where += f' AND T.DateStart<"{latest}"'
         query_dict = {
             'tables': 'Tournaments=T',
-            'fields': 'T.Name',
+            'fields': 'T.Name,T.DateStart',
             'where': where,
             'order_by': 'T.Date ASC'}
 
         rows = self._query(query_dict)
-        return [row['Name'] for row in rows]
+        return [(row['Name'],row['DateStart']) for row in rows]
 
     def getSeasonResults(self, season):
         r = self.lpdb.api('cargoquery',

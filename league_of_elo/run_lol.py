@@ -43,6 +43,7 @@ class DataCache():
         if not self.lpdb:
             self.lpdb_connect()
         season_list = self.lpdb.getTournaments(regions, start_year, stop_date)
+        season_list = [tname for tname, tdate in season_list]
         season_list = list(filter(lambda x: all([t not in x for t in IGNORE_TOURNAMENTS]), season_list))
         return season_list
 
