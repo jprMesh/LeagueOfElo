@@ -47,7 +47,7 @@ class League(object):
 
     def loadGames(self, results, playoffs=False, using_ids=False):
         for result in results:
-            t1, t2, t1s, t2s, date, match_round = result
+            t1, t2, t1s, t2s, date, best_of, match_round = result
             if not t1s or not match_round:
                 continue
             try:
