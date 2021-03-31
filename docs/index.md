@@ -85,4 +85,4 @@ Since some teams play more games than others due to playoffs and tiebreakers, th
 
 ---
 
-Big thanks to [Leaguepedia](https://lol.gamepedia.com/Help:API_Documentation) for maintaining databases with all the data used here!
+Big thanks to [Leaguepedia](https://lol.fandom.com/Help:API_Documentation) for maintaining databases with all the data used here!

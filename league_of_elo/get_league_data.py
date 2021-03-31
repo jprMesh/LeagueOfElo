@@ -4,7 +4,7 @@ from .leaguepedia_login import login, key
 
 class Leaguepedia_DB(object):
     def __init__(self):
-        self.lpdb = mwclient.Site('lol.gamepedia.com', path='/')
+        self.lpdb = mwclient.Site('lol.fandom.com', path='/')
         self.lpdb.login(login, key)
 
     def _query(self, query_dict):
