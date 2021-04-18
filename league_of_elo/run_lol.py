@@ -27,7 +27,7 @@ IGNORE_TOURNAMENTS = [
     'Play-In',
     'Rift Rivals',
     'EU Face-Off',
-    'Mid-Season Showdown',
+    'Mid-Season Showdown 2020',
     'IWCT']
 
 
