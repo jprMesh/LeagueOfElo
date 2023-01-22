@@ -25,7 +25,8 @@ class Leaguepedia_DB(object):
     def getTournaments(self, region_list, earliest=None, latest=None):
         regions = {
             'NA': 'North America',
-            'EU': 'Europe',
+            'EU': 'EMEA',
+            #'EU': 'Europe', # Prior to 2023
             'KR': 'Korea',
             'CN': 'China',
             'INT': 'International'}
@@ -110,5 +111,5 @@ if __name__ == '__main__':
     from pprint import pprint
     lpdb = Leaguepedia_DB()
     #pprint(lpdb.getRegions())
-    #pprint(lpdb.getTournaments('INT', '2010-01-01'))
-    pprint(lpdb.getSeasonResults('LPL 2017 Summer Playoffs'))
+    pprint(lpdb.getTournaments(['EU'], '2010-01-01'))
+    #pprint(lpdb.getSeasonResults('LPL 2017 Summer Playoffs'))
