@@ -30,7 +30,8 @@ IGNORE_TOURNAMENTS = [
     'Mid-Season Showdown',
     'TCL',
     'SKE',
-    'IWCT']
+    'IWCT',
+    'Season Opening']
 
 
 class DataCache():
